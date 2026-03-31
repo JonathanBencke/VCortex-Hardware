@@ -181,17 +181,17 @@ Estoque suficiente para lote inicial. Monitorar se escalar.
 
 ## Resumo Executivo
 
-| # | Severidade | Item | Ação |
-|---|-----------|------|------|
-| 1 | CRÍTICO | C_GNSS_10N LCSC errado (X7R vs NP0) | Corrigir LCSC na bom_jlcpcb.csv |
-| 2 | CRÍTICO | Q1 VDS do JSMSEMI não confirmado | Verificar datasheet C53113978 |
-| 3 | ALTO | K-Line RX: GPIO33 exposto a 5V | Adicionar divisor 10k/20k no RXD |
-| 4 | ALTO | F1 rated 30V, TVS clamps 35.5V | Substituir por polyfuse 60V |
-| 5 | ALTO | bom_resolved.csv obsoleto e enganoso | Renomear + marcar OBSOLETO |
-| 6 | MÉDIO | BAT1 footprint 12.8×6mm vs layout | Verificar kicad_pcb |
-| 7 | MÉDIO | NEO-M9N Global Sourcing | Cotar antes de ordernar |
-| 8 | MÉDIO | L9637D estoque baixo | Verificar antes de ordernar |
-| 9 | MÉDIO | LMR14020 VOUT pode chegar a 5.24V | Documentado, aceitável (5V±10%) |
+| # | Severidade | Item | Status |
+|---|-----------|------|--------|
+| 1 | CRÍTICO ✅ | C_GNSS_10N LCSC errado (X7R vs NP0) | **RESOLVIDO** — C3855387 muRata GRM1555C1E103JE01D (C0G 25V) |
+| 2 | CRÍTICO ✅ | Q1 VDS do JSMSEMI não confirmado | **RESOLVIDO** — datasheet C53113978 confirma VDS(max)=-40V; alertas adicionados à BOM |
+| 3 | ALTO ✅ | K-Line RX: GPIO33 exposto a 5V | **RESOLVIDO** — R_KRXA (10k C60490) + R_KRXB (20k C93942) adicionados ao schematic e BOM |
+| 4 | ALTO ✅ | F1 rated 30V, TVS clamps 35.5V | **RESOLVIDO** — substituído por MF-MSMF300/60-2 Bourns (60V, C383507) |
+| 5 | ALTO ✅ | bom_resolved.csv obsoleto e enganoso | **RESOLVIDO** — renomeado para vcortex_bom_v1_draft.csv + header OBSOLETO |
+| 6 | MÉDIO ⚠️ | BAT1 footprint 12.8×6mm vs layout PCB | **PENDENTE** — verificar kicad/vcortex.kicad_pcb quando layout for criado |
+| 7 | MÉDIO ⚠️ | NEO-M9N Global Sourcing | **PENDENTE** — cotar JLCPCB antes de ordernar; notas adicionadas à BOM/schematic |
+| 8 | MÉDIO ⚠️ | L9637D estoque baixo (~1035 unid) | **PENDENTE** — verificar estoque antes de ordernar; alerta adicionado à BOM |
+| 9 | MÉDIO ✅ | LMR14020 VOUT pode chegar a 5.24V | **DOCUMENTADO** — aceitável (5V±10% para todos os componentes) |
 
 **Itens verificados e corretos (não alterar):**
 GPIO12 pull-down ✓ | Buck 18k (5V) ✓ | R_S 10Ohm ✓ | C_DTR/C_RTS ✓ |
