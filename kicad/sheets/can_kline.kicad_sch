@@ -15,56 +15,36 @@
 
   (lib_symbols)
 
-  ;; ============================================================
-  ;; CONECTOR OBD2 J1 — THT, soldado manualmente
-  ;; ============================================================
   (text "J1 — CONECTOR OBD2 MACHO J1962 (16 pinos, THT)\nSoldado manualmente pelo usuario — NAO incluir no PCBA JLCPCB\n\nPINAGEM J1962 (numeros oficiais SAE J1962):\n  Pino 4:  Chassis Ground    -> GND PCB\n  Pino 5:  Signal Ground     -> GND PCB\n  Pino 6:  CAN_HIGH ISO15765 -> R_S_H(10Ohm) -> protecao CAN -> TCAN1044V\n  Pino 7:  K-LINE ISO9141    -> TVS3 SMCJ24A -> R_K(100Ohm) -> L9637D K-LINE\n  Pino 14: CAN_LOW  ISO15765 -> R_S_L(10Ohm) -> protecao CAN -> TCAN1044V\n  Pino 16: V_BATT+           -> VBATT_RAW -> Sheet PWR (protecao de entrada)\n  Outros:  NC (J1850, L-LINE nao implementados)\n\nFOOTPRINT: 2 fileiras de 8 pinos, pitch 2.54mm x 5.84mm entre fileiras\n  Posicionar na BORDA INFERIOR do PCB (pinos saem para fora)\n  Sourcear em: AliExpress 'OBD2 16-pin male PCB connector THT'"
-    (at 20 20)
+    (at 20 20 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "14000001-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; BLOCO CAN BUS — CADEIA COMPLETA DE PROTECAO
-  ;; Ordem fisica da borda do conector para o CI:
-  ;; OBD2 pino6/14 -> R_S(10Ohm) -> PESD2CAN -> CMC1 -> FB1/FB2 -> TCAN1044V
-  ;; ============================================================
   (text "BLOCO CAN — CADEIA DE PROTECAO (da borda ao CI)\n\nCIRCUITO:\n\n  OBD2-6(CANH) ──[R_S_H 10Ohm]──[PESD2CAN]──[CMC1-A]──[FB1]── TCAN1044V pino5(CANH)\n  OBD2-14(CANL) ──[R_S_L 10Ohm]──[PESD2CAN]──[CMC1-B]──[FB2]── TCAN1044V pino6(CANL)\n                                     │\n                                    GND\n\nR_S_H e R_S_L — Resistores SERIE 10Ohm em CANH e CANL (CRITICO — eram ausentes)\n  Valor: 10Ohm 1% 0402\n  LCSC: C138066 (YAGEO RC0402FR-0710RL, 1.16M unid)\n  CORRIGIDO: C25744 era 10k (ERRADO!), C104 nao encontrado\n  FUNCAO:\n    1. Limitam corrente de pico durante ESD (sem R: corrente ilimitada no PESD2CAN)\n    2. Formam filtro RC com capacitancia do PESD2CAN: fc ~ 2GHz (nao afeta CAN 1Mbps)\n  Posicionar: IMEDIATAMENTE apos pinos do conector OBD2, antes de qualquer outro componente\n\nTVS2 — PESD2CAN (LCSC: C21713986 NXP)\n  Diferencial ESD/TVS, SOT-363 (3 pinos: CANH, CANL, GND)\n  Tensao de clamp: 12V, capacitancia: 8pF\n  Protecao: ±8kV ESD (IEC 61000-4-2 Contato)\n  Posicionar: primeiro componente CAN apos R_S na borda do PCB\n\nCMC1 — ACM2012H-900-2P-T (LCSC: C448605 TDK)\n  Common Mode Choke 900Ohm@100MHz, 2x choke em par CANH/CANL\n  Reduz EMI de modo comum em ate 20dB\n\nFB1, FB2 — BLM21PG601SN1D (LCSC: C41556732 muRata, 480 unid)\n  Ferrite 600Ohm@100MHz, 0805, 500mA\n  CORRIGIDO: C21179 nao encontrado na LCSC\n  Um em cada linha CANH e CANL, entre CMC1 e TCAN1044V"
-    (at 20 150)
+    (at 20 150 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "14000002-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; TCAN1044V — TRANSCEIVER CAN
-  ;; ============================================================
   (text "U_CAN — TCAN1044VDRQ1 (LCSC: C1852061 Texas Instruments)\nCAN Transceiver ISO 11898-2, 1Mbps, AEC-Q100 Grade 1, SOIC-8\n\nPINAGEM SOIC-8:\n  1 = TXD: CAN_TX <- GPIO18 ESP32 (3.3V direto, sem level shifter)\n            V_IH_min TCAN1044V = 2.0V, GPIO18 = 3.3V -> OK\n  2 = GND\n  3 = VCC: +5V (V_5V_FILT, pos filtro L_FILT do Buck)\n  4 = RXD: CAN_RX_RAW -> divisor R_CAN_G1/R_CAN_G2 -> GPIO19 ESP32\n            RXD e saida 5V! Divisor necessario para proteger GPIO19 (max 3.6V)\n  5 = CANH: para OBD2 pino6 via cadeia protecao\n  6 = CANL: para OBD2 pino14 via cadeia protecao\n  7 = STB: Standby\n            *** HIGH = STANDBY (dispositivo mudo) ***\n            *** LOW  = NORMAL (operacao ativa) ***\n            Conectar a GPIO5 (CAN_STB) com pull-up 10k -> +3V3\n            Default em standby. Firmware: gpio_set_level(GPIO5, 0) para ativar\n  8 = VREF: Referencia 0.5*VCC. Conectar cap 100nF ao GND (C_VREF)\n\nDIVISOR RXD 5V -> 3.3V (para GPIO19):\n  R_CAN_G1: 10k 0402 (LCSC: C60490 YAGEO RC0402FR-0710KL)\n  R_CAN_G2: 20k 0402 (LCSC: C93942 YAGEO RC0402FR-0720KL, 1M unid)\n  V_GPIO19 = 5V * 20k/(10k+20k) = 3.33V -> OK\n  CORRIGIDO: R_CAN_G2 C25803 era 10k 0603 (ERRADO para 20k)\n\nDECOUPLING TCAN1044V:\n  C_CAN_VCC: 100nF X7R 0402 (LCSC: C14663) — bypass VCC pino 3\n  C_CAN_BULK: 1uF X5R 0402 (LCSC: C52923) — bulk VCC pino 3\n\nTERMINACAO CAN SELECIONAVEL POR SOFTWARE (GPIO25):\n  Q4: BSS138 N-MOSFET SOT-23 (LCSC: C49435659)\n  R_TERM: 120R 1% 0402 (LCSC: C25779)\n  R_TERM_G: 10k 0402 (LCSC: C60490) — pull-down gate Q4 -> GND\n  Firmware:\n    gpio_set_level(GPIO_CAN_TERM, 1): ativa terminacao (no de extremidade)\n    gpio_set_level(GPIO_CAN_TERM, 0): desativa (no intermediario)"
-    (at 600 20)
+    (at 600 20 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "14000003-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; BLOCO K-LINE — L9637D + PROTECAO
-  ;; ============================================================
   (text "BLOCO K-LINE — L9637D + PROTECAO\n\nCIRCUITO:\n  OBD2-7(K-LINE) ──[TVS3 SMCJ24A]──[R_K 100Ohm]── L9637D pino6(K-LINE)\n                        │\n                       GND\n\nU_KLINE — L9637D (LCSC: C153038 STMicroelectronics, ~1035 unid)\n  K-Line Transceiver ISO 9141 / KWP2000, SO-8, VCC=5V\n  *** ALERTA ESTOQUE: verificar disponibilidade antes de ordernar ***\n  Alternativa pinagem-compativel: MC33290 (NXP) — mesmo protocolo ISO9141\n\nPINAGEM SO-8:\n  1 = RXD: saida 5V -> divisor R_KRXA/R_KRXB -> GPIO33 ESP32 (KLINE_RX)\n          *** CORRIGIDO v1.3: RXD e saida 5V do L9637D. GPIO33 max=3.3V. ***\n          Divisor: RXD ──[R_KRXA 10k]──┬── GPIO33\n                                        [R_KRXB 20k]\n                                        └── GND\n          V_GPIO33 = 5V * 20k/30k = 3.33V OK\n          U_LS1 (74LVC1T45) usado SOMENTE para TX (GPIO15 -> L9637D TXD pino8)\n  2 = EN: Enable -> pull-up 10k -> +5V (sempre habilitado)\n  3 = VCC: +5V (V_5V_FILT)\n  4 = GND\n  5 = L-LINE: NC\n  6 = K-LINE: linha bidirecional -> OBD2 pino 7 via TVS3 + R_K\n  7 = KBAT: pull-up interno da K-LINE\n      JUMPER SELECIONAVEL:\n      Posicao A (modo veiculo): KBAT = VBATT_PROT, pull-up R_KPU_A=510Ohm\n      Posicao B (modo bancada): KBAT = +5V, pull-up R_KPU_B=1k\n  8 = TXD: entrada <- 74LVC1T45 pino A <- GPIO15 ESP32 (KLINE_TX, 3.3V)\n\nDECOUPLING L9637D:\n  C_K_VCC: 10uF X5R 0805 (LCSC: C96446) — bulk VCC (era ausente)\n  C_K_BYP: 100nF X7R 0402 (LCSC: C14663) — bypass VCC\n\nPROTECAO K-LINE:\nTVS3 — SMCJ24A (LCSC: C42440493 Littelfuse, 5635 unid)\nR_K — 100Ohm 1% 0402 (LCSC: C106232 YAGEO RC0402FR-07100RL, 2.66M unid)\n  CORRIGIDO: C104 nao encontrado na LCSC\n\nLEVEL SHIFTER K-LINE TX:\nU_LS1 — 74LVC1T45GW SOT-23-6 (LCSC: C478004 NXP, 3685 unid)\n  Translacao 3.3V -> 5V para KLINE_TX\n\nJUMPER K-LINE PULL-UP:\n  R_KPU_A: 510Ohm 1% 0402 (LCSC: C25123 UNI-ROYAL 0402WGF5100TCE, 116k unid)\n            CORRIGIDO: C27522 nao encontrado na LCSC\n  R_KPU_B: 1k 0402 (LCSC: C21190 Yageo, 13.9M unid)"
-    (at 600 380)
+    (at 600 380 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "14000004-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; RESUMO BOM — STAGES 3 e 4 — CODIGOS LCSC VERIFICADOS v1.3
-  ;; ============================================================
   (text "RESUMO BOM — STAGE 3 (CAN) e STAGE 4 (K-Line) — rev v1.3\n\nREF          VALUE           LCSC         FOOTPRINT       FUNCAO\nR_S_H        10Ohm           C138066      0402            Serie CANH (CORRIGIDO: C25744 era 10k!)\nR_S_L        10Ohm           C138066      0402            Serie CANL\nTVS2         PESD2CAN        C21713986    SOT-363         ESD diferencial CAN\nCMC1         ACM2012H-900    C448605      2012            Common Mode Choke CAN\nFB1          BLM21PG601SN1D  C41556732    0805            Ferrite CANH (CORRIGIDO: C21179 NOT_FOUND)\nFB2          BLM21PG601SN1D  C41556732    0805            Ferrite CANL\nU_CAN        TCAN1044VDRQ1   C1852061     SOIC-8          CAN Transceiver 5V\nC_CAN_VCC    100nF           C14663       0402            Bypass TCAN VCC\nC_CAN_BULK   1uF             C52923       0402            Bulk TCAN VCC\nC_VREF       100nF           C14663       0402            Cap TCAN VREF pino8\nR_CAN_G1     10k             C60490       0402            Divisor RXD CAN top\nR_CAN_G2     20k             C93942       0402            Divisor RXD CAN bot (CORRIGIDO: C25803 era 10k 0603!)\nQ4           BSS138          C49435659    SOT-23          MOSFET terminacao CAN\nR_TERM       120Ohm 1%       C25779       0402            Terminacao CAN\nR_TERM_G     10k             C60490       0402            Pull-down gate Q4\nU_KLINE      L9637D          C153038      SOIC-8          K-Line Transceiver\nC_K_VCC      10uF            C96446       0805            Bulk VCC L9637D\nC_K_BYP      100nF           C14663       0402            Bypass VCC L9637D\nU_LS1        74LVC1T45GW     C478004      SOT-23-6        Level shifter KLINE TX somente (GPIO15->L9637D TXD)\nR_KRXA       10k             C60490       0402            Divisor KLINE_RX top (NOVO v1.3 — L9637D RXD 5V->3.3V)\nR_KRXB       20k             C93942       0402            Divisor KLINE_RX bot (NOVO v1.3 — V_GPIO33=3.33V)\nTVS3         SMCJ24A         C42440493    SMC             TVS 24V K-Line\nR_K          100Ohm          C106232      0402            Serie K-Line (CORRIGIDO: C104 NOT_FOUND)\nR_KPU_A      510Ohm          C25123       0402            Pull-up K-Line veiculo (CORRIGIDO: C27522 NOT_FOUND)\nR_KPU_B      1k              C21190       0402            Pull-up K-Line bancada\nR_EN_K       10k             C60490       0402            Pull-up EN L9637D -> +5V\nJ1           OBD2 J1962 THT  (nao PCBA)  THT 16p         Conector OBD2 (soldar manual)"
-    (at 20 680)
+    (at 20 680 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "14000005-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; LABELS HIERARQUICOS
-  ;; ============================================================
   (hierarchical_label "+5V" (shape input) (at 20 900 180)
     (effects (font (size 1.27 1.27)) (justify right))
     (uuid "14000006-0000-0000-0000-000000000001")

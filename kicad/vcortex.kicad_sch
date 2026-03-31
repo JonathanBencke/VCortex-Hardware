@@ -118,7 +118,7 @@
   )
 
   (text "V-Cortex OBD2 Telemetry Module\nArquitetura Hierarquica de Esquematico\n\nSheets:\n- PWR: Protecao + Buck 5V + LDO 3.3V\n- MCU: ESP32-WROOM-32E + strapping\n- USB: CP2102N + auto-programacao\n- CAN_KLINE: TCAN1044V + L9637D + OBD2 connector\n- PERIPH: NEO-M9N GNSS + MicroSD + expansao I2C"
-    (at 20 200)
+    (at 20 200 0)
     (effects (font (size 2 2)) (justify left top))
     (uuid "00000000-0000-0000-0000-000000000010")
   )

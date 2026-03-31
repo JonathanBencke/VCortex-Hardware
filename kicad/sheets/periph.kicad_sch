@@ -15,73 +15,48 @@
 
   (lib_symbols)
 
-  ;; ============================================================
-  ;; BLOCO 1: GNSS NEO-M9N-00B + CIRCUITO COMPLETO
-  ;; ============================================================
   (text "U_GNSS — u-blox NEO-M9N-00B\nMPN: NEO-M9N-00B | Sourcing: JLCPCB Global Sourcing ou consignment\nNAO disponivel na LCSC catalogo normal\nPackage: LGA-24 (6.0 x 6.0 x 1.0mm)\n*** SUPPLY CHAIN: cotar JLCPCB Global Sourcing antes de confirmar pedido ***\nAlternativa: comprar no Mouser/DigiKey e enviar como consignment ao JLCPCB\nDowngrade aceito: NEO-M8N-0-10 (geracao anterior, suporta 10Hz via UBX)\n\nALIMENTACAO:\n  VCC: +3.3V (modulo tem regulador interno; NEO-M9N-00B opera com VCC=3.3V)\n  VCC_IO: +3.3V (nivel logico das interfaces UART/I2C/SPI)\n  V_BCKP: supercap ASR-M-10-0.1F via diodo D_BAT + R_BAT\n\nINTERFACE UART:\n  UART_TX (NEO pino 5) -> GPIO16 ESP32 (GNSS_RX) @ 115200 baud\n  UART_RX (NEO pino 6) <- GPIO17 ESP32 (GNSS_TX) @ 115200 baud\n\nPPS — Pulse Per Second (GPIO35 ESP32):\n  TIMEPULSE (NEO pino 20) -> R_PPS(100Ohm) -> GPIO35 ESP32\n  LCSC R_PPS: C106232 (YAGEO RC0402FR-07100RL, 2.66M unid)\n  CORRIGIDO: C104 nao encontrado na LCSC\n\nDECOUPLING GNSS (3 niveis conforme Engineering Guide secao 3.3.2):\n  +3V3 -> [FB_GNSS 600Ohm] -> V_GNSS_VCC\n  V_GNSS_VCC -> C_GNSS_BULK(10uF) -> GND  (bulk)\n  V_GNSS_VCC -> C_GNSS_100N(100nF) -> GND (bypass, < 0.5mm do pino VCC)\n  V_GNSS_VCC -> C_GNSS_10N(10nF)  -> GND  (alta freq, < 0.5mm do pino VCC_IO)\n\n  COMPONENTES:\n  FB_GNSS:      BLM21PG601SN1D (LCSC: C41556732 muRata, 480 unid)\n                CORRIGIDO: C21179 nao encontrado\n  C_GNSS_BULK:  10uF X5R 0805 (LCSC: C96446)\n  C_GNSS_100N:  100nF X7R 0402 (LCSC: C14663)\n  C_GNSS_10N:   10nF C0G/NP0 0402 (LCSC: C3855387 muRata GRM1555C1E103JE01D, 25V, 16k unid)\n              *** CORRIGIDO v1.3: era C15849 X7R (ERRADO). C0G obrigatorio no VCC_IO ***\n              Nota: CC0402JRNPO9BN103 (Yageo) nao disponivel na LCSC — use C3855387"
-    (at 20 20)
+    (at 20 20 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "15000001-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; BIAS-T PARA ANTENA ATIVA
-  ;; ============================================================
   (text "BIAS-T — ALIMENTACAO ANTENA ATIVA GNSS\n(Engineering Guide secao 3.3.5)\n\nFUNCAO: fornece tensao DC ao cabo coaxial para alimentar o LNA\nda antena patch ativa via o mesmo cabo RF\n\nCIRCUITO:\n  V_GNSS_VCC (3.3V) ──[L_BIAS 47nH]──┬── RF+DC (ao conector U.FL)\n                                       │\n                                   [C_BLOCK 100pF NP0]── RF_IN do NEO-M9N\n\nCOMPONENTES:\n  L_BIAS:  47nH RF (LCSC: C2903684 Chilisin HP0603-47NH-N, 0603, 6945 unid)\n           FOOTPRINT: 0603 (nao 0402). Impedancia @ 1.575GHz ~ 465 Ohm\n           CORRIGIDO: Wurth 744777047A sem codigo LCSC valido\n  C_BLOCK: 100pF NP0 0402 (LCSC: C14858 Yageo, 4.65M unid)\n           NP0/C0G obrigatorio — estabilidade em RF 1575MHz\n\nSE ANTENA PASSIVA (patch sem LNA): omitir L_BIAS e C_BLOCK,\n  conectar NEO-M9N RF_IN diretamente a trilha 50Ohm ao U.FL"
-    (at 20 300)
+    (at 20 300 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "15000002-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; SUPERCAP BACKUP GNSS
-  ;; ============================================================
   (text "BAT1 — Supercap 0.1F/5.5V (Backup GNSS RTC)\n\nCIRCUITO:\n  +3V3 -> [D_BAT Schottky] -> [R_BAT 100Ohm] -> BAT1(0.1F/5.5V) -> GND\n                     │\n  V_BCKP NEO-M9N <───┘ (pino 14)\n\nD_BAT: 1N5819 SOD-323 (LCSC: C48997863 KTP, 204k unid)\n  CORRIGIDO: C8681 Vishay 1N5819WS sem estoque\n  Schottky 1A/40V, Vf~0.3V; V_BCKP ~ 3.0V (3.3V-0.3V)\n\nR_BAT: 100Ohm 1% 0402 (LCSC: C106232 YAGEO RC0402FR-07100RL)\n  CORRIGIDO: C104 nao encontrado na LCSC\n  Limita corrente de carga pico do supercap\n\nBAT1: 0.1F/5.5V SMD (LCSC: C6075487 Yezhan ASR-M-10-0.1F)\n  PACKAGE: 12.8 x 6mm — FOOTPRINT ALTERADO de 3.2x2.5 para 12.8x6mm\n  CPX3225A Seiko nao disponivel na LCSC\n  Alternativa menor se disponivel: C496056 (Yezhan ASR-M-2627)"
-    (at 20 560)
+    (at 20 560 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "15000003-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; U.FL CONECTOR + TRILHA RF 50 OHM
-  ;; ============================================================
   (text "J_ANT — Conector U.FL / IPEX SMD\nLCSC: C381116 (U.FL-R-SMT-1 Hirose, 1875 unid)\n\nTRILHA RF 50 OHM (CRITICA — ver LAYOUT_GUIDE.md):\n  Largura trilha: 0.34mm (50Ohm, stackup JLC04161H-7628, L1 ref GND L2, h~0.21mm)\n  Comprimento: < 10mm\n  Sem vias, sem 90 graus, clearance 1.0mm de outros sinais\n  Remover copper fill na regiao da trilha RF"
-    (at 600 20)
+    (at 600 20 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "15000004-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; MICROSD — GPIO MAPPING CORRIGIDO
-  ;; GPIO4=CS, GPIO13=MOSI, GPIO14=CLK, GPIO23=MISO
-  ;; ============================================================
   (text "J_SD — Slot MicroSD Push-Push SMD\nLCSC: C52750848 (Minlenda MLD-TF PUSH-H18, 5970 unid)\nCORRIGIDO: C780928 XKB sem estoque\n\nPINAGEM SD em MODO SPI (GPIOs conforme Engineering Guide secao 2.2):\n  pino 1 (CS/DAT3):   SD_CS    <- GPIO4  ESP32 (pull-up R_SD_CS 10k)\n  pino 2 (CMD/MOSI):  SD_MOSI  <- GPIO13 ESP32\n  pino 3 (VSS):       GND\n  pino 4 (VDD):       +3V3 via C_SD_BULK\n  pino 5 (CLK):       SD_CLK   <- GPIO14 ESP32\n  pino 6 (VSS):       GND\n  pino 7 (DAT0/MISO): SD_MISO  -> GPIO23 ESP32\n\nDECOUPLING MicroSD:\n  C_SD_BULK: 10uF X5R 0805 (LCSC: C96446) — bulk VDD\n  C_SD_BYP:  100nF X7R 0402 (LCSC: C14663) — bypass VDD\n  R_SD_CS:   10k 0402 (LCSC: C60490 YAGEO RC0402FR-0710KL) — pull-up CS"
-    (at 600 150)
+    (at 600 150 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "15000005-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; ESD + EXPANSAO I2C/GPIO
-  ;; ============================================================
   (text "ESD PROTECAO HEADERS DE EXPANSAO:\n\nESD1, ESD2 — PRTR5V0U2X (LCSC: C53446675 NXP, 8695 unid)\n  2 canais ESD por pacote SOT-363, clamp 5.5V, cap 0.5pF\n\nHEADER I2C:\n  SDA (GPIO21) — pull-up R_I2C_SDA(4.7k) -> +3V3\n  SCL (GPIO22) — pull-up R_I2C_SCL(4.7k) -> +3V3\n  R_I2C_SDA: 4.7k 0402 (LCSC: C105871 YAGEO RC0402FR-074K7L, 2.4M unid)\n  R_I2C_SCL: 4.7k 0402 (LCSC: C105871)\n  CORRIGIDO: C25900 UNI-ROYAL 0402WGF4701TCE sem estoque"
-    (at 600 470)
+    (at 600 470 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "15000006-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; RESUMO BOM — STAGES 5 e 6 — CODIGOS LCSC VERIFICADOS v1.3
-  ;; ============================================================
   (text "RESUMO BOM — STAGE 5 (GNSS) e STAGE 6 (Perifericos) — rev v1.3\n\nREF           VALUE           LCSC          NOTAS\nU_GNSS        NEO-M9N-00B     GLOBAL_SRC    LGA-24, Global Sourcing ou consignment\nFB_GNSS       BLM21PG601SN1D  C41556732     Ferrite 600Ohm GNSS VCC (CORRIGIDO: C21179 NOT_FOUND)\nC_GNSS_BULK   10uF X5R        C96446        Bulk GNSS VCC\nC_GNSS_100N   100nF X7R       C14663        Bypass GNSS VCC\nC_GNSS_10N    10nF C0G        C3855387      muRata GRM1555C1E103JE01D 25V. CORRIGIDO v1.3: C15849 era X7R.\nL_BIAS        47nH RF 0603    C2903684      Bias-T antena ativa (Chilisin HP0603-47NH-N)\nC_BLOCK       100pF NP0       C14858        DC-block antena RF\nR_PPS         100Ohm          C106232       Serie GNSS PPS -> GPIO35 (CORRIGIDO: C104 NOT_FOUND)\nJ_ANT         U.FL            C381116       Conector antena externa\nD_BAT         1N5819          C48997863     Schottky carga supercap (CORRIGIDO: C8681 OUT)\nR_BAT         100Ohm          C106232       Limite corrente carga supercap\nBAT1          0.1F/5.5V SMD   C6075487      Supercap Yezhan 12.8x6mm (FOOTPRINT ALTERADO)\nJ_SD          MicroSD push    C52750848     Slot MicroSD Minlenda (CORRIGIDO: C780928 OUT)\nC_SD_BULK     10uF X5R        C96446        Bulk VDD SD\nC_SD_BYP      100nF X7R       C14663        Bypass VDD SD\nR_SD_CS       10k             C60490        Pull-up SD_CS (GPIO4)\nESD1          PRTR5V0U2X      C53446675     ESD 2 canais expansao 1\nESD2          PRTR5V0U2X      C53446675     ESD 2 canais expansao 2\nNTC1          10k B3950       C5221675      NTC Murata 0402 GPIO36 (Global Sourcing)\nR_NTC         10k             C60490        Pull-up NTC -> +3V3\nC_NTC         100nF           C14663        Filtro NTC ADC\nR_I2C_SDA     4.7k            C105871       Pull-up SDA GPIO21 (CORRIGIDO: C25900 OUT)\nR_I2C_SCL     4.7k            C105871       Pull-up SCL GPIO22"
-    (at 20 780)
+    (at 20 780 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "15000007-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; LABELS HIERARQUICOS
-  ;; ============================================================
   (hierarchical_label "+3V3" (shape input) (at 1100 30 0)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid "15000008-0000-0000-0000-000000000001")

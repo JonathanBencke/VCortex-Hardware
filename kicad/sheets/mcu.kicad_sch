@@ -15,56 +15,37 @@
 
   (lib_symbols)
 
-  ;; ============================================================
-  ;; ESP32-WROOM-32E (C701342)
-  ;; Modulo com antena PCB integrada
-  ;; ============================================================
 
   (text "U_MCU - ESP32-WROOM-32E\nLCSC: C701342 (Espressif)\nDual-core 240MHz, BLE 5.0, WiFi 802.11 b/g/n\nVariante: 4MB flash (padrao) ou 8MB\n\nDIMENSOES DO MODULO: 18 x 25.5 mm (incluindo antena)\nANTENA PCB: extremidade oposta aos pinos\nKEEP-OUT OBRIGATORIO: area 15mm x 3mm ao redor da antena\n  - Sem copper fill, sem vias, sem componentes embaixo da antena\n  - Apontar antena para borda LIVRE do PCB (direita no layout)"
-    (at 20 20)
+    (at 20 20 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "12000001-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; MAPEAMENTO COMPLETO DE PINOS — FONTE: Engineering Guide sec 2.2
-  ;; ============================================================
   (text "PINAGEM OFICIAL ESP32-WROOM-32E — V-CORTEX v1.2\n(Fonte: V-Cortex_Hardware_Engineering_Guide.md Secao 2.2)\n\n┌──────────┬─────────────────────────┬────────────────────────────────────────────────┐\n│ GPIO     │ Funcao V-Cortex         │ Observacoes                                    │\n├──────────┼─────────────────────────┼────────────────────────────────────────────────┤\n│ GPIO 0   │ BOOT Button             │ Pull-up 10k -> +3V3. Botao BOOT -> GND         │\n│ GPIO 2   │ LED Status              │ Saida via R_LED 330Ohm                         │\n│ GPIO 4   │ SD_CS                   │ Chip Select MicroSD (SPI)                      │\n│ GPIO 5   │ CAN_STB                 │ Pull-up 10k -> +3V3 (HIGH=STANDBY, LOW=normal) │\n│ GPIO 12  │ LIVRE / ADC             │ *** PULL-DOWN 10k -> GND OBRIGATORIO ***        │\n│ GPIO 13  │ SD_MOSI                 │ SPI MOSI MicroSD                               │\n│ GPIO 14  │ SD_CLK                  │ SPI CLK MicroSD                                │\n│ GPIO 15  │ KLINE_TX                │ Pull-up 10k -> +3V3 (strapping: HIGH=boot logs)│\n│ GPIO 16  │ GNSS_RX                 │ UART2 RX <- NEO-M9N TX @ 115200 baud           │\n│ GPIO 17  │ GNSS_TX                 │ UART2 TX -> NEO-M9N RX @ 115200 baud           │\n│ GPIO 18  │ CAN_TX                  │ -> TCAN1044V TXD (direto, sem level shifter)    │\n│ GPIO 19  │ CAN_RX                  │ <- Divisor 10k/20k <- TCAN1044V RXD (5V->3.3V)│\n│ GPIO 21  │ I2C_SDA                 │ Expansao, pull-up 4.7k -> +3V3                 │\n│ GPIO 22  │ I2C_SCL                 │ Expansao, pull-up 4.7k -> +3V3                 │\n│ GPIO 23  │ SD_MISO                 │ SPI MISO MicroSD                               │\n│ GPIO 25  │ CAN_TERM_CTL            │ Controle terminacao CAN (BSS138 gate)          │\n│ GPIO 26  │ EXP_GPIO_1              │ Header expansao + ESD PRTR5V0U2X               │\n│ GPIO 27  │ EXP_GPIO_2              │ Header expansao + ESD PRTR5V0U2X               │\n│ GPIO 32  │ EXP_GPIO_3              │ Header expansao + ESD                          │\n│ GPIO 33  │ KLINE_RX                │ Input do L9637D                                │\n│ GPIO 34  │ ADC_VBATT               │ Input-only. Divisor R1=100k/R2=22k. V_ADC=0.18*VBATT│\n│ GPIO 35  │ GNSS_PPS                │ Input-only. PPS do NEO-M9N via R 100Ohm        │\n│ GPIO 36/VP│ ADC_NTC                │ Input-only. NTC 10k + pull-up 10k -> +3V3      │\n│ GPIO 39/VN│ ADC_EXP               │ Input-only, expansao                           │\n│ TXD0     │ CP2102N_RX              │ UART0 programacao/debug                        │\n│ RXD0     │ CP2102N_TX              │ UART0 programacao/debug                        │\n│ EN       │ Reset via CP2102N       │ Circuito auto-programacao + RC 10k+1uF         │\n└──────────┴─────────────────────────┴────────────────────────────────────────────────┘"
-    (at 20 50)
+    (at 20 50 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "12000002-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; STRAPPING PINS — DETALHAMENTO CRITICO
-  ;; ============================================================
   (text "STRAPPING PINS — DETALHAMENTO CRITICO\n\nGPIO 0 (BOOT):\n  - Pull-up 10k -> +3V3: modo normal (HIGH no boot)\n  - Q2 BC817 coletor -> GPIO0: puxado LOW por DTR do CP2102N para download mode\n  - R_GPIO0: 10k 0402 (LCSC: C60490 YAGEO RC0402FR-0710KL)\n\nGPIO 5 (CAN_STB / strapping SDIO timing):\n  - Pull-up 10k -> +3V3: HIGH no boot = configuracao SDIO padrao (OK)\n  - *** ATENCAO: HIGH = STANDBY do TCAN1044V ***\n  - Firmware DEVE fazer gpio_set_level(GPIO5, 0) para ativar CAN (LOW=normal)\n  - R_GPIO5: 10k 0402 (LCSC: C60490)\n\nGPIO 12 (MTDI / Flash voltage select):\n  - *** CRITICO: PULL-DOWN 10k -> GND OBRIGATORIO ***\n  - HIGH no boot = seleciona flash 1.8V -> destroi ESP32 com flash de 3.3V\n  - NUNCA conectar sinal com pull-up a este pino\n  - R_GPIO12: 10k 0402 (LCSC: C60490) conectado pino GPIO12 -> GND\n\nGPIO 15 (MTDO / UART0 boot logs):\n  - Pull-up 10k -> +3V3: HIGH = habilita logs UART0 no boot (util para debug)\n  - Usado como KLINE_TX — nivel em repouso HIGH (pull-up) compativel com K-Line idle\n  - R_GPIO15: 10k 0402 (LCSC: C60490)"
-    (at 20 260)
+    (at 20 260 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "12000003-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; COMPONENTES DE SUPORTE MCU
-  ;; ============================================================
   (text "COMPONENTES DECOUPLING ESP32:\n\nC_MCU1: 10uF X5R 0805 (LCSC: C96446) — bulk +3V3 proximo ESP32, lado pinos alim\nC_MCU2: 10uF X5R 0805 (LCSC: C96446) — bulk +3V3 lado oposto do modulo\nC_MCU3: 100nF X7R 0402 x2 (LCSC: C14663) — bypass pinos VCC do modulo (< 2mm)\nTotal: 20uF bulk + 200nF bypass conforme guia secao 3.1.3\n\nSTRAPPING RESISTORS (LCSC: C60490 YAGEO RC0402FR-0710KL — 39k unid):\nR_GPIO0:  10k 0402 (LCSC: C60490) — pull-up GPIO0 -> +3V3\nR_GPIO5:  10k 0402 (LCSC: C60490) — pull-up GPIO5 -> +3V3 (CAN_STB default=standby)\nR_GPIO12: 10k 0402 (LCSC: C60490) — PULL-DOWN GPIO12 -> GND *** CRITICO ***\nR_GPIO15: 10k 0402 (LCSC: C60490) — pull-up GPIO15 -> +3V3 (KLINE_TX idle high)\n\nEN RESET CIRCUIT:\nR_EN: 10k 0402 (LCSC: C60490) — pull-up EN -> +3V3\nC_EN: 1uF X5R 0402 (LCSC: C52923) — filtro RC para reset limpo na energizacao\n\nLED STATUS:\nLED1: LED 0402 verde (LCSC: C965812 Everlight)\nR_LED: 330R 0402 (LCSC: C25104 UNI-ROYAL 0402WGF3300TCE, 2.6M unid)\n       CORRIGIDO: C17738 era 510Ohm 0805 (ERRADO)\n\nCIRCUITO ADC VBATT (GPIO34 — input only):\n  VBATT_PROT -> R_V1(100k) -> GPIO34 -> R_V2(22k) -> GND\n  V_ADC = VBATT * 22k/(100k+22k) = VBATT * 0.18\n  Max: 16V * 0.18 = 2.88V < 3.3V OK\n  C_ADC: 100nF 0402 (LCSC: C14663) entre GPIO34 e GND\n  COMPONENTES:\n  R_V1: 100k 1% 0402 (LCSC: C60491 YAGEO RC0402FR-07100KL, 4.3M unid)\n        CORRIGIDO: C25741 era codigo de 10k (ERRADO para 100k)\n  R_V2: 22k 1% 0402 (LCSC: C25768 UNI-ROYAL 0402WGF2202TCE, 406k unid)\n        CORRIGIDO: C25803 era 10k 0603 (ERRADO)\n  C_ADC: 100nF 0402 (LCSC: C14663)\n\nCIRCUITO ADC NTC TEMPERATURA (GPIO36/VP — input only):\n  +3V3 -> R_NTC(10k) -> GPIO36 -> NTC1(10k B3950) -> GND\n  C_NTC: 100nF 0402 (LCSC: C14663) entre GPIO36 e GND\n  COMPONENTES:\n  NTC1: 10k NTC B3950 0402 (LCSC: C5221675 Murata NCP15XV103E03RC)\n        NOTA: Global Sourcing JLCPCB — sem estoque no catalogo LCSC\n        CORRIGIDO: C4004475 nao encontrado\n  R_NTC: 10k 0402 (LCSC: C60490)\n  C_NTC: 100nF 0402 (LCSC: C14663)\n\nDIVISOR CAN_RX 5V -> 3.3V (GPIO19 — input only):\n  TCAN1044V RXD (5V) -> R_CAN_G1(10k) -> GPIO19 -> R_CAN_G2(20k) -> GND\n  V_GPIO19 = 5V * 20k/(10k+20k) = 3.33V — OK\n  USAR: R_CAN_G1=10k (C60490), R_CAN_G2=20k (C93942 YAGEO RC0402FR-0720KL, 1M unid)\n        CORRIGIDO: C25803 era 10k 0603 (ERRADO para 20k)"
-    (at 430 50)
+    (at 430 50 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "12000004-0000-0000-0000-000000000001")
   )
 
-  ;; ============================================================
-  ;; NOTA CAN_TX — DIRETO, SEM LEVEL SHIFTER
-  ;; ============================================================
   (text "NOTA CAN_TX (GPIO18 -> TCAN1044V TXD):\n  Conexao DIRETA - sem level shifter necessario\n  TCAN1044V V_IH(min) = 2.0V\n  ESP32 GPIO output = 3.3V -> margem de 1.3V -> OK\n  (Engineering Guide linha 170: '74LVC1T45 para CAN TX foi ELIMINADO')\n\nNOTA CAN_STB (GPIO5 -> TCAN1044V STB):\n  STB = HIGH -> STANDBY (dispositivo silencioso)\n  STB = LOW  -> NORMAL (operacao CAN ativa)\n  Pull-up 10k: default = standby. Firmware inicializa gpio_set_level(GPIO5, 0)\n  NUNCA deixar STB flutuante — garantir pull definido\n\nNOTA KLINE_TX (GPIO15 -> 74LVC1T45 -> L9637D):\n  GPIO15 e strapping pin. Pull-up 10k -> HIGH no boot = UART0 logs ativados (OK)\n  Level shifter 74LVC1T45: necessario pois L9637D V_IH > 3.3V\n  Nivel idle da K-Line: HIGH (pull-up 510R/1k no pino KBAT do L9637D)\n  GPIO15 HIGH em repouso: compativel com K-Line idle HIGH"
-    (at 430 280)
+    (at 430 280 0)
     (effects (font (size 1.5 1.5)) (justify left top))
     (uuid "12000004-0000-0000-0000-000000000002")
   )
 
-  ;; ============================================================
-  ;; LABELS HIERARQUICOS — CONEXOES COM OUTRAS SHEETS
-  ;; ============================================================
   (hierarchical_label "+3V3" (shape input) (at 20 450 180)
     (effects (font (size 1.27 1.27)) (justify right))
     (uuid "12000005-0000-0000-0000-000000000001")
@@ -78,7 +59,6 @@
     (uuid "12000005-0000-0000-0000-000000000003")
   )
 
-  ;; Para sheet USB (CP2102N)
   (hierarchical_label "UART0_TX" (shape output) (at 700 30 0)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid "12000005-0000-0000-0000-000000000004")
@@ -96,7 +76,6 @@
     (uuid "12000005-0000-0000-0000-000000000007")
   )
 
-  ;; Para sheet CAN_KLINE
   (hierarchical_label "CAN_TX" (shape output) (at 700 80 0)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid "12000005-0000-0000-0000-000000000008")
@@ -122,7 +101,6 @@
     (uuid "12000005-0000-0000-0000-000000000013")
   )
 
-  ;; Para sheet PERIPH (GNSS + MicroSD)
   (hierarchical_label "GNSS_TX" (shape output) (at 700 130 0)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid "12000005-0000-0000-0000-000000000014")
