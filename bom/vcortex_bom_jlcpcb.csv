@@ -53,7 +53,7 @@ R_CAN_G2,20k,RC0402FR-0720KL,Resistor_SMD:R_0402_1005Metric,C93942,Yageo,Divisor
 Q4,BSS138,BSS138LT1G,Package_TO_SOT_SMD:SOT-23,C49435659,ON Semi,N-MOSFET chave terminacao CAN controlado por GPIO25,Basic,1,PCBA,
 R_TERM,120R 1%,RC0402FR-07120RL,Resistor_SMD:R_0402_1005Metric,C25779,Yageo,Terminacao CAN 120Ohm 1% 0402,Basic,1,PCBA,
 R_TERM_G,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Pull-DOWN gate Q4 -> GND (terminacao desativada por default),Basic,1,PCBA,
-U_KLINE,L9637D,L9637D,Package_SO:SOIC-8_3.9x4.9mm_P1.27mm,C153038,STMicroelectronics,K-Line transceiver ISO9141 KWP2000 SO-8 5V,Extended,1,PCBA,Estoque baixo C153038. Alt: MC33290 NXP se indisponivel
+U_KLINE,L9637D,L9637D,Package_SO:SOIC-8_3.9x4.9mm_P1.27mm,C153038,STMicroelectronics,K-Line transceiver ISO9141 KWP2000 SO-8 5V,Extended,1,PCBA,ALERTA ESTOQUE: ~1035 unid (C153038) — verificar antes de ordernar. Alt pinagem-compativel: MC33290 NXP (C2984316). Parte legada.
 C_K_VCC,10uF X5R,CL21A106KAYNNNE,Capacitor_SMD:C_0805_2012Metric,C96446,Samsung,Bulk VCC L9637D 10uF,Basic,1,PCBA,CRITICO - sem este bulk o L9637D pode oscilar na linha K
 C_K_BYP,100nF X7R,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,Bypass VCC L9637D 100nF,Basic,1,PCBA,
 U_LS1,74LVC1T45GW,74LVC1T45GW126,Package_TO_SOT_SMD:SOT-363_SC-70-6,C478004,NXP,Level shifter 3.3V->5V KLINE TX (GPIO15->L9637D TXD),Extended,1,PCBA,
@@ -64,7 +64,7 @@ R_KPU_B,1k,RC0402FR-071KL,Resistor_SMD:R_0402_1005Metric,C21190,Yageo,Pull-up K-
 R_EN_K,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Pull-UP EN L9637D -> +5V (sempre habilitado),Basic,1,PCBA,
 R_KRXA,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Divisor KLINE_RX top 10k (L9637D RXD 5V -> GPIO33 3.3V),Basic,1,PCBA,NOVO v1.3: L9637D RXD e saida 5V. GPIO33 max=3.3V. V_GPIO33=5V*20k/30k=3.33V
 R_KRXB,20k,RC0402FR-0720KL,Resistor_SMD:R_0402_1005Metric,C93942,Yageo,Divisor KLINE_RX bot 20k -> GND,Basic,1,PCBA,NOVO v1.3: mesmo conceito do CAN_RX (R_CAN_G1/G2). Posicionar proximo ao GPIO33.
-U_GNSS,NEO-M9N-00B,NEO-M9N-00B,RF_GPS:u-blox_NEO-M9N_LGA-24,GLOBAL_SOURCING,u-blox,GNSS 10Hz LGA-24 GPS/GLONASS/Galileo/BeiDou,GlobalSourcing,1,PCBA,NAO na LCSC. JLCPCB Global Sourcing ou consignment. MPN: NEO-M9N-00B
+U_GNSS,NEO-M9N-00B,NEO-M9N-00B,RF_GPS:u-blox_NEO-M9N_LGA-24,GLOBAL_SOURCING,u-blox,GNSS 10Hz LGA-24 GPS/GLONASS/Galileo/BeiDou,GlobalSourcing,1,PCBA,NAO na LCSC. Opcao 1: JLCPCB Global Sourcing (cotar antes — prazo +2-3 sem). Opcao 2: Mouser/DigiKey + consignment JLCPCB. Alt downgrade: NEO-M8N-0-10 (8a ger 10Hz).
 FB_GNSS,BLM21PG601SN1D,BLM21PG601SN1D,Inductor_SMD:L_0805_2012Metric,C41556732,muRata,Ferrite 600Ohm@100MHz isolamento VCC GNSS. CORRIGIDO: C21179 era NOT_FOUND,Extended,1,PCBA,
 C_GNSS_BULK,10uF X5R,CL21A106KAYNNNE,Capacitor_SMD:C_0805_2012Metric,C96446,Samsung,Bulk VCC GNSS 10uF,Basic,1,PCBA,CRITICO: sem bulk o GNSS tem dropout no cold-start
 C_GNSS_100N,100nF X7R,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,Bypass VCC GNSS 100nF (<0.5mm do pino VCC),Basic,1,PCBA,
