@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V-Cortex Circuit Viewer v1.1</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#e6edf3;font-family:system-ui,monospace;overflow:hidden;height:100vh;display:flex;flex-direction:column}
+#header{background:#161b22;border-bottom:1px solid #30363d;padding:8px 16px;display:flex;align-items:center;gap:16px;flex-shrink:0;z-index:10}
+#header h1{font-size:14px;font-weight:600;color:#58a6ff}
+#header span{font-size:11px;color:#8b949e}
+.btn{background:#21262d;border:1px solid #30363d;color:#c9d1d9;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px}
+.btn:hover{background:#30363d}
+#main{display:flex;flex:1;overflow:hidden}
+#canvas-wrap{flex:1;overflow:hidden;position:relative;cursor:grab}
+#canvas-wrap.panning{cursor:grabbing}
+#circuit{display:block;width:100%;height:100%}
+#detail-panel{width:280px;background:#161b22;border-left:1px solid #30363d;padding:14px;overflow-y:auto;flex-shrink:0;font-size:12px}
+#detail-panel h2{font-size:13px;color:#58a6ff;margin-bottom:10px;border-bottom:1px solid #30363d;padding-bottom:6px}
+#detail-panel .empty{color:#8b949e;font-style:italic}
+.detail-ref{font-size:20px;font-weight:700;color:#f0f6fc;margin-bottom:4px}
+.detail-value{font-size:13px;color:#e6edf3;margin-bottom:8px}
+.detail-mpn{font-size:11px;color:#8b949e;font-family:monospace;margin-bottom:4px}
+.detail-lcsc{font-size:11px;color:#58a6ff;font-family:monospace;margin-bottom:4px}
+.detail-pkg{font-size:11px;color:#8b949e;margin-bottom:4px}
+.detail-desc{font-size:11px;color:#c9d1d9;margin-bottom:10px;line-height:1.5}
+.detail-stage{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;margin-bottom:10px}
+.detail-conns h3{font-size:11px;color:#8b949e;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.conn-item{font-size:11px;padding:3px 0;border-bottom:1px solid #21262d;color:#c9d1d9}
+.conn-item .net{color:#f0f6fc;font-weight:600}
+.conn-item .peer{color:#58a6ff}
+#legend{background:#161b22;border-top:1px solid #30363d;padding:6px 16px;display:flex;align-items:center;gap:16px;flex-shrink:0;font-size:11px;color:#8b949e}
+.leg-item{display:flex;align-items:center;gap:5px}
+.leg-dot{width:12px;height:3px;border-radius:2px}
+.stage-box rect{cursor:default}
+.comp-group{cursor:pointer}
+.comp-group:hover rect.comp-bg{filter:brightness(1.3)}
+.comp-group.selected rect.comp-bg{stroke-width:2.5!important}
+.conn-line{pointer-events:none}
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>V-Cortex Circuit Viewer</h1>
+  <span>ESP32 OBD2 — 54 componentes / 6 stages</span>
+  <div style="flex:1"></div>
+  <button class="btn" onclick="resetView()">Reset View</button>
+  <button class="btn" onclick="zoomIn()">Zoom +</button>
+  <button class="btn" onclick="zoomOut()">Zoom −</button>
+  <button class="btn" onclick="toggleConns()">Conexões</button>
+</div>
+<div id="main">
+  <div id="canvas-wrap">
+    <svg id="circuit" viewBox="0 0 1900 1160" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <div id="detail-panel">
+    <h2>Detalhes do Componente</h2>
+    <div class="empty">Clique em um componente para ver detalhes</div>
+  </div>
+</div>
+<div id="legend">
+  <span>Nets:</span>
+  <div class="leg-item"><div class="leg-dot" style="background:#e74c3c"></div> Power</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#58a6ff"></div> Signal</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#2ecc71;height:2px"></div> CAN Bus</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#f39c12;height:2px"></div> K-Line</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#9b59b6;height:2px"></div> GNSS</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#636e72;height:1px"></div> GND</div>
+  <span style="margin-left:auto;color:#6e7681">Scroll=zoom · Drag=pan · Click=detalhes</span>
+</div>
+<script>
+const STAGES = [
+  {id:1,name:'Stage 1 — Power Supply',color:'#e74c3c',bg:'#1a0a0a',cols:2,zone:{x:10,y:10,w:352,h:740},
+   components:[
+    {ref:'Q1',value:'P-MOSFET -40V',mpn:'PMV45EN2R-JSM',lcsc:'C53113978',pkg:'SOT-23',desc:'Protecao inversao polaridade VDS=-40V ID=-3.5A'},
+    {ref:'F1',value:'Polyfuse 3A/30V',mpn:'1812L300MR',lcsc:'C127824',pkg:'1812',desc:'PTC fuse resetavel sobrecorrente V_BATT'},
+    {ref:'TVS1',value:'TVS 22V/1.5kW',mpn:'SMDJ22A',lcsc:'C4154722',pkg:'SMC',desc:'Clamp load dump V_BATT 22V → 35.5V'},
+    {ref:'L1',value:'10uH/4A shielded',mpn:'CDRH6D28NP-100NC',lcsc:'C312982',pkg:'SMD6728',desc:'Indutor shielded filtro LC entrada Buck Isat~4A'},
+    {ref:'C1',value:'100uF/50V',mpn:'EEEFK1H101P',lcsc:'C178548',pkg:'D8×L10mm',desc:'Bulk cap entrada star-point GND D8×10.2mm altura limite'},
+    {ref:'U_BUCK',value:'LMR14020 2A',mpn:'LMR14020SDDAR',lcsc:'C187824',pkg:'SOT-23-6',desc:'Buck converter 40V/2A → 5V ~1.5MHz TI'},
+    {ref:'U_LDO',value:'AP2112K-3.3',mpn:'AP2112K-3.3TRG1',lcsc:'C51118',pkg:'SOT-23-5',desc:'LDO 3.3V/600mA dropout 250mV'},
+    {ref:'C_IN',value:'100nF/100V',mpn:'CL05B104KO5NNNC',lcsc:'C1525',pkg:'0402',desc:'Bypass entrada Buck alta frequencia'},
+    {ref:'C_BOUT1',value:'22uF/10V X5R',mpn:'CL21A226MAQNNNE',lcsc:'C45783',pkg:'0805',desc:'Bulk saida Buck 1'},
+    {ref:'C_BOUT2',value:'22uF/10V X5R',mpn:'CL21A226MAQNNNE',lcsc:'C45783',pkg:'0805',desc:'Bulk saida Buck 2'},
+    {ref:'C_BOUT3',value:'100nF X7R',mpn:'CL05B104KO5NNNC',lcsc:'C1525',pkg:'0402',desc:'Bypass saida Buck'},
+    {ref:'C_BOOT',value:'100nF X7R',mpn:'CL05B104KO5NNNC',lcsc:'C1525',pkg:'0402',desc:'Boot cap LMR14020 pino BOOT'},
+    {ref:'R_BOOT_BK',value:'100k 1%',mpn:'RC0402FR-07100KL',lcsc:'C60491',pkg:'0402',desc:'FB top Buck Rfb1 divisor'},
+    {ref:'R_BOT_BK',value:'56.2k 1%',mpn:'RC0402FR-0756K2L',lcsc:'C183355',pkg:'0402',desc:'FB bottom Buck define Vout=5V CRITICO'},
+    {ref:'C_LDO_IN',value:'1uF X5R',mpn:'CL05A105KA5NQNC',lcsc:'C52923',pkg:'0402',desc:'Entrada filtro LC pre-LDO'},
+    {ref:'C_LDO_OUT',value:'10uF X5R',mpn:'CL21A106KOQNNNE',lcsc:'C1713',pkg:'0805',desc:'Saida LDO bulk'},
+  ]},
+  {id:2,name:'Stage 2 — MCU Core',color:'#3498db',bg:'#0a0d14',cols:2,zone:{x:374,y:10,w:664,h:1140},
+   components:[
+    {ref:'U_MCU',value:'ESP32-WROOM-32E',mpn:'ESP32-WROOM-32E-N8',lcsc:'C701342',pkg:'Module 18×20mm',desc:'MCU dual-core 240MHz BLE/WiFi 8MB flash — HUB CENTRAL',isHub:true},
+    {ref:'U_USB',value:'CP2104 USB-UART',mpn:'CP2104-F03-GMR',lcsc:'C47742',pkg:'QFN-24 4×4mm',desc:'USB-UART bridge auto-programacao DTR+RTS'},
+    {ref:'Q2',value:'BC817-40',mpn:'BC817-40',lcsc:'C609806',pkg:'SOT-23',desc:'NPN BJT auto-prog DTR → GPIO0'},
+    {ref:'Q3',value:'BC817-40',mpn:'BC817-40',lcsc:'C609806',pkg:'SOT-23',desc:'NPN BJT auto-prog RTS → EN Reset'},
+    {ref:'C_MCU1',value:'10uF X5R',mpn:'CL21A106KOQNNNE',lcsc:'C1713',pkg:'0805',desc:'Decoupling ESP32 bulk 1 pico BLE TX 500mA'},
+    {ref:'C_MCU2',value:'10uF X5R',mpn:'CL21A106KOQNNNE',lcsc:'C1713',pkg:'0805',desc:'Decoupling ESP32 bulk 2 lado oposto'},
+    {ref:'C_MCU3',value:'100nF ×2',mpn:'CL05B104KO5NNNC',lcsc:'C1525',pkg:'0402',desc:'Bypass ESP32 100nF ×2 <2mm do modulo'},
+    {ref:'C_USB',value:'100nF X7R',mpn:'CL05B104KO5NNNC',lcsc:'C1525',pkg:'0402',desc:'Bypass CP2104 decoupling VCC'},
+    {ref:'R_GPIO0',value:'10k pullup',mpn:'RC0402FR-0710KL',lcsc:'C60490',pkg:'0402',desc:'Pull-up GPIO0 → 3.3V boot mode select'},
+    {ref:'R_GPIO12',value:'10k pulldown',mpn:'RC0402FR-0710KL',lcsc:'C60490',pkg:'0402',desc:'Pull-down GPIO12 → GND strapping CRITICO flash 3.3V'},
+    {ref:'R_GPIO5',value:'10k pullup',mpn:'RC0402FR-0710KL',lcsc:'C60490',pkg:'0402',desc:'Pull-up GPIO5 → 3.3V CAN_STB HIGH=standby'},
+    {ref:'R_LED',value:'330R',mpn:'RC0402FR-07330RL',lcsc:'C105875',pkg:'0402',desc:'Serie LED status GPIO2'},
+  ]},
+  {id:3,name:'Stage 3 — CAN Bus',color:'#2ecc71',bg:'#0a140d',cols:2,zone:{x:1050,y:10,w:440,h:490},
+   components:[
+    {ref:'U_CAN',value:'TCAN1044V',mpn:'TCAN1044VDRQ1',lcsc:'C1852061',pkg:'SOIC-8',desc:'CAN transceiver ISO11898-2 automotivo 5V VCC'},
+    {ref:'TVS2',value:'PESD2CAN',mpn:'PESD2CAN',lcsc:'C21713986',pkg:'SOT-363',desc:'ESD/TVS CANH/CANL bidirec 24V'},
+    {ref:'FB1',value:'600R@100MHz',mpn:'BLM21AG601SN1D',lcsc:'C85837',pkg:'0805',desc:'Ferrite bead EMI CANH'},
+    {ref:'FB2',value:'600R@100MHz',mpn:'BLM21AG601SN1D',lcsc:'C85837',pkg:'0805',desc:'Ferrite bead EMI CANL'},
+    {ref:'CMC1',value:'900R@100MHz',mpn:'DLW21SN900SQ2L',lcsc:'C97856',pkg:'2012-4P',desc:'Common mode choke CAN 2 canais Murata'},
+    {ref:'Q4',value:'BSS138',mpn:'BSS138',lcsc:'C49435659',pkg:'SOT-23',desc:'N-MOSFET chave terminacao CAN GPIO25'},
+    {ref:'R_TERM',value:'120R 1%',mpn:'RC0402FR-07120RL',lcsc:'C114758',pkg:'0402',desc:'Terminacao CAN 120R ISO11898'},
+    {ref:'R_CAN_G1',value:'10k 1%',mpn:'RC0402FR-0710KL',lcsc:'C60490',pkg:'0402',desc:'Divider CAN_RXD 5V→3.3V top'},
+    {ref:'R_CAN_G2',value:'20k 1%',mpn:'RC0402FR-0720KL',lcsc:'C93942',pkg:'0402',desc:'Divider CAN_RXD 5V→3.3V bottom'},
+  ]},
+  {id:4,name:'Stage 4 — K-Line',color:'#f39c12',bg:'#140f04',cols:3,zone:{x:1050,y:512,w:440,h:280},
+   components:[
+    {ref:'U_KLINE',value:'L9637D',mpn:'L9637D',lcsc:'C153038',pkg:'SO-8',desc:'K-Line transceiver ISO9141/KWP2000 legado ST'},
+    {ref:'U_LS1',value:'74LVC1T45',mpn:'74LVC1T45GW',lcsc:'C478004',pkg:'SOT23-6',desc:'Level shifter 3.3V↔5V K-Line TX'},
+    {ref:'TVS3',value:'SMCJ24A',mpn:'SMCJ24A',lcsc:'C42440493',pkg:'SMC',desc:'TVS 24V/1.5kW protecao K-Line'},
+    {ref:'R_K',value:'100R',mpn:'RC0402FR-07100RL',lcsc:'C106232',pkg:'0402',desc:'Resistor serie K-Line'},
+    {ref:'R_KPU',value:'510R',mpn:'RC0402FR-07510RL',lcsc:'C276273',pkg:'0402',desc:'Pull-up K-Line para V_BATT'},
+  ]},
+  {id:5,name:'Stage 5 — GNSS',color:'#9b59b6',bg:'#0d0a14',cols:2,zone:{x:10,y:762,w:352,h:388},
+   components:[
+    {ref:'U_GNSS',value:'NEO-M9N',mpn:'NEO-M9N-00B',lcsc:'C5119087',pkg:'LGA',desc:'GNSS 10Hz multi-constellation GPS+GLONASS+BDS u-blox estoque BAIXO ~327'},
+    {ref:'FB_GNSS',value:'600R@100MHz',mpn:'BLM21AG601SN1D',lcsc:'C85837',pkg:'0805',desc:'Ferrite isolamento VCC GNSS ruido digital'},
+    {ref:'L_FILT',value:'10uH shielded',mpn:'SPM5015T-100M-LR',lcsc:'C5372747',pkg:'SMD5415',desc:'Indutor filtro post-Buck pre-LDO (caminho 5V→LDO)'},
+    {ref:'BAT1',value:'0.1F/5.5V',mpn:'ASR-S-7-0.1F',lcsc:'C6075508',pkg:'SMD5930',desc:'Supercap backup GNSS hot-start V_BCKP'},
+    {ref:'J_ANT',value:'U.FL 50Ω',mpn:'—',lcsc:'C88374',pkg:'U.FL SMD',desc:'Conector antena GNSS externa IPEX/U.FL'},
+    {ref:'C_GNSS',value:'100nF ×2',mpn:'CL05B104KO5NNNC',lcsc:'C1525',pkg:'0402',desc:'Bypass VCC GNSS ×2'},
+  ]},
+  {id:6,name:'Stage 6 — Storage/Expansão',color:'#1abc9c',bg:'#0a1410',cols:3,zone:{x:1050,y:804,w:440,h:346},
+   components:[
+    {ref:'J_SD',value:'MicroSD',mpn:'—',lcsc:'C393941',pkg:'Push-push',desc:'Slot MicroSD horizontal push-push SMD SPI'},
+    {ref:'ESD1',value:'PRTR5V0U2X',mpn:'PRTR5V0U2X',lcsc:'C53446675',pkg:'SOT363',desc:'ESD header expansao 2ch GPIO26/27'},
+    {ref:'ESD2',value:'PRTR5V0U2X',mpn:'PRTR5V0U2X',lcsc:'C53446675',pkg:'SOT363',desc:'ESD header expansao 2ch GPIO32/36'},
+    {ref:'NTC1',value:'10k B=3950',mpn:'NCP15WF104F03RC',lcsc:'C77130',pkg:'0402',desc:'NTC termistor temperatura interna -40~+125C GPIO36 ADC'},
+    {ref:'R_I2C_SDA',value:'4.7k',mpn:'RC0402FR-074K7L',lcsc:'C105871',pkg:'0402',desc:'Pull-up I2C SDA GPIO21 → 3.3V'},
+    {ref:'R_I2C_SCL',value:'4.7k',mpn:'RC0402FR-074K7L',lcsc:'C105871',pkg:'0402',desc:'Pull-up I2C SCL GPIO22 → 3.3V'},
+  ]},
+];
+
+const CONNECTIONS = [
+  // Stage 1 power chain
+  {f:'Q1',t:'F1',net:'V_BATT_FILT',type:'power'},
+  {f:'F1',t:'TVS1',net:'NET_F_OUT',type:'power'},
+  {f:'F1',t:'C1',net:'NET_F_OUT',type:'power'},
+  {f:'F1',t:'L1',net:'NET_F_OUT',type:'power'},
+  {f:'F1',t:'C_IN',net:'NET_F_OUT',type:'power'},
+  {f:'L1',t:'U_BUCK',net:'NET_BATT_FILT',type:'power'},
+  {f:'U_BUCK',t:'C_BOUT1',net:'NET_5V',type:'power'},
+  {f:'U_BUCK',t:'C_BOUT2',net:'NET_5V',type:'power'},
+  {f:'U_BUCK',t:'C_BOUT3',net:'NET_5V',type:'power'},
+  {f:'U_BUCK',t:'R_BOOT_BK',net:'NET_5V',type:'power'},
+  {f:'R_BOOT_BK',t:'R_BOT_BK',net:'FB_BK',type:'signal'},
+  {f:'U_BUCK',t:'C_BOOT',net:'BOOT',type:'signal'},
+  {f:'U_BUCK',t:'L_FILT',net:'NET_5V',type:'power'},
+  {f:'L_FILT',t:'C_LDO_IN',net:'NET_5V_FILT',type:'power'},
+  {f:'C_LDO_IN',t:'U_LDO',net:'NET_5V_FILT',type:'power'},
+  {f:'U_LDO',t:'C_LDO_OUT',net:'NET_3V3',type:'power'},
+  // Cross-stage power
+  {f:'U_BUCK',t:'U_CAN',net:'NET_5V',type:'power'},
+  {f:'U_BUCK',t:'U_USB',net:'NET_5V',type:'power'},
+  {f:'U_BUCK',t:'U_KLINE',net:'NET_5V',type:'power'},
+  {f:'U_LDO',t:'U_MCU',net:'NET_3V3',type:'power'},
+  {f:'U_LDO',t:'C_MCU1',net:'NET_3V3',type:'power'},
+  {f:'U_LDO',t:'C_MCU2',net:'NET_3V3',type:'power'},
+  {f:'U_LDO',t:'FB_GNSS',net:'NET_3V3',type:'power'},
+  {f:'FB_GNSS',t:'U_GNSS',net:'NET_3V3_GNSS',type:'gnss'},
+  {f:'C_GNSS',t:'U_GNSS',net:'NET_3V3_GNSS',type:'gnss'},
+  // Stage 2 MCU
+  {f:'U_MCU',t:'U_USB',net:'UART0_TXD_RXD',type:'signal'},
+  {f:'U_USB',t:'Q2',net:'DTR',type:'signal'},
+  {f:'U_USB',t:'Q3',net:'RTS',type:'signal'},
+  {f:'Q2',t:'U_MCU',net:'GPIO0_BOOT',type:'signal'},
+  {f:'Q3',t:'U_MCU',net:'EN_RESET',type:'signal'},
+  {f:'U_MCU',t:'R_LED',net:'GPIO2_LED',type:'signal'},
+  {f:'R_GPIO0',t:'U_MCU',net:'GPIO0_PU',type:'signal'},
+  {f:'R_GPIO12',t:'U_MCU',net:'GPIO12_PD',type:'signal'},
+  {f:'R_GPIO5',t:'U_MCU',net:'GPIO5_CAN_STB',type:'signal'},
+  // CAN bus
+  {f:'CMC1',t:'FB1',net:'CANH',type:'can'},
+  {f:'CMC1',t:'FB2',net:'CANL',type:'can'},
+  {f:'FB1',t:'U_CAN',net:'CANH_IC',type:'can'},
+  {f:'FB2',t:'U_CAN',net:'CANL_IC',type:'can'},
+  {f:'TVS2',t:'U_CAN',net:'ESD_CAN',type:'signal'},
+  {f:'U_CAN',t:'R_CAN_G1',net:'CAN_RXD_5V',type:'can'},
+  {f:'R_CAN_G1',t:'R_CAN_G2',net:'CAN_RXD_DIV',type:'can'},
+  {f:'Q4',t:'R_TERM',net:'TERM_SW',type:'can'},
+  {f:'U_MCU',t:'U_CAN',net:'GPIO18_CAN_TX',type:'can'},
+  {f:'R_CAN_G1',t:'U_MCU',net:'GPIO19_CAN_RX',type:'can'},
+  {f:'U_MCU',t:'Q4',net:'GPIO25_TERM_EN',type:'can'},
+  {f:'R_GPIO5',t:'U_CAN',net:'CAN_STB',type:'can'},
+  // K-Line
+  {f:'R_K',t:'TVS3',net:'K_LINE_EXT',type:'kline'},
+  {f:'R_K',t:'U_KLINE',net:'K_LINE',type:'kline'},
+  {f:'R_KPU',t:'U_KLINE',net:'K_PU',type:'kline'},
+  {f:'U_LS1',t:'U_KLINE',net:'KTXD_5V',type:'kline'},
+  {f:'U_MCU',t:'U_LS1',net:'GPIO15_KTXD',type:'kline'},
+  {f:'U_KLINE',t:'U_MCU',net:'GPIO33_KRXD',type:'kline'},
+  // GNSS
+  {f:'U_GNSS',t:'BAT1',net:'V_BCKP',type:'gnss'},
+  {f:'U_GNSS',t:'J_ANT',net:'RF_IN_50OHM',type:'gnss'},
+  {f:'U_MCU',t:'U_GNSS',net:'UART2_GPIO16_17',type:'gnss'},
+  {f:'U_MCU',t:'U_GNSS',net:'GPIO35_PPS',type:'gnss'},
+  // Storage/Expansion
+  {f:'U_MCU',t:'J_SD',net:'SPI_GPIO4_13_14_23',type:'signal'},
+  {f:'U_MCU',t:'NTC1',net:'GPIO36_ADC',type:'signal'},
+  {f:'U_MCU',t:'R_I2C_SDA',net:'GPIO21_SDA',type:'signal'},
+  {f:'U_MCU',t:'R_I2C_SCL',net:'GPIO22_SCL',type:'signal'},
+  {f:'U_MCU',t:'ESD1',net:'GPIO26_27_EXP',type:'signal'},
+  {f:'U_MCU',t:'ESD2',net:'GPIO32_36_EXP',type:'signal'},
+];
+
+const NET_COLORS = {power:'#e74c3c',signal:'#58a6ff',can:'#2ecc71',kline:'#f39c12',gnss:'#9b59b6',gnd:'#636e72'};
+
+// Build component map with positions
+const compMap = {};
+const stageMap = {};
+
+STAGES.forEach(stage => {
+  const z = stage.zone;
+  const cols = stage.cols;
+  const cw = Math.floor((z.w - 20 - (cols-1)*10) / cols);
+  const ch = 52;
+  const gap = 10;
+  const sx = z.x + 10;
+  const sy = z.y + 38;
+  let row = 0, col = 0;
+
+  stage.components.forEach(comp => {
+    if (comp.isHub) {
+      compMap[comp.ref] = {
+        ...comp, stage: stage.id, stageColor: stage.color,
+        x: sx, y: sy,
+        w: (cw + gap) * cols - gap,
+        h: ch + 28,
+        cx: sx + ((cw + gap) * cols - gap) / 2,
+        cy: sy + (ch + 28) / 2,
+      };
+      row = 1; col = 0;
+    } else {
+      compMap[comp.ref] = {
+        ...comp, stage: stage.id, stageColor: stage.color,
+        x: sx + col * (cw + gap),
+        y: sy + row * (ch + gap),
+        w: cw, h: ch,
+        cx: sx + col * (cw + gap) + cw / 2,
+        cy: sy + row * (ch + gap) + ch / 2,
+      };
+      col++;
+      if (col >= cols) { col = 0; row++; }
+    }
+  });
+  stageMap[stage.id] = stage;
+});
+
+// Build connection index per component
+const compConns = {};
+CONNECTIONS.forEach(c => {
+  if (!compConns[c.f]) compConns[c.f] = [];
+  if (!compConns[c.t]) compConns[c.t] = [];
+  compConns[c.f].push({...c, direction:'→', peer: c.t});
+  compConns[c.t].push({...c, direction:'←', peer: c.f});
+});
+
+// SVG rendering
+const svg = document.getElementById('circuit');
+let showConns = true;
+
+function renderAll() {
+  svg.innerHTML = '';
+  renderConnections();
+  renderStages();
+  renderComponents();
+}
+
+function renderStages() {
+  STAGES.forEach(stage => {
+    const z = stage.zone;
+    const g = svgEl('g', {class:'stage-box'});
+    g.appendChild(svgEl('rect', {
+      x: z.x, y: z.y, width: z.w, height: z.h,
+      rx: 8, fill: stage.bg,
+      stroke: stage.color, 'stroke-width': 1.5, 'stroke-opacity': 0.6,
+    }));
+    const title = svgEl('text', {
+      x: z.x + 12, y: z.y + 22,
+      fill: stage.color, 'font-size': 12, 'font-weight': '600',
+      'font-family': 'system-ui, sans-serif',
+    });
+    title.textContent = stage.name;
+    g.appendChild(title);
+    svg.appendChild(g);
+  });
+}
+
+function renderComponents() {
+  Object.values(compMap).forEach(comp => {
+    const g = svgEl('g', {class:'comp-group', 'data-ref': comp.ref});
+    g.addEventListener('click', () => showDetail(comp.ref));
+    g.addEventListener('mouseenter', () => highlightConns(comp.ref, true));
+    g.addEventListener('mouseleave', () => highlightConns(comp.ref, false));
+
+    const isHub = comp.isHub;
+    g.appendChild(svgEl('rect', {
+      class:'comp-bg',
+      x: comp.x, y: comp.y, width: comp.w, height: comp.h,
+      rx: 4,
+      fill: isHub ? '#0d1f3c' : '#1c2128',
+      stroke: comp.stageColor,
+      'stroke-width': isHub ? 2 : 1,
+      'stroke-opacity': isHub ? 1 : 0.7,
+    }));
+
+    // Ref text
+    const refT = svgEl('text', {
+      x: comp.cx, y: comp.y + (isHub ? 26 : 17),
+      'text-anchor': 'middle',
+      fill: isHub ? '#58a6ff' : '#f0f6fc',
+      'font-size': isHub ? 13 : 10,
+      'font-weight': '700',
+      'font-family': 'monospace',
+    });
+    refT.textContent = comp.ref;
+    g.appendChild(refT);
+
+    // Value text
+    const valT = svgEl('text', {
+      x: comp.cx, y: comp.y + (isHub ? 42 : 28),
+      'text-anchor': 'middle',
+      fill: '#8b949e',
+      'font-size': isHub ? 10 : 8,
+      'font-family': 'system-ui, sans-serif',
+    });
+    valT.textContent = truncate(comp.value, isHub ? 30 : 18);
+    g.appendChild(valT);
+
+    // LCSC code
+    const lcscT = svgEl('text', {
+      x: comp.cx, y: comp.y + (isHub ? 58 : 40),
+      'text-anchor': 'middle',
+      fill: '#58a6ff',
+      'font-size': 7,
+      'font-family': 'monospace',
+    });
+    lcscT.textContent = comp.lcsc;
+    g.appendChild(lcscT);
+
+    svg.appendChild(g);
+  });
+}
+
+function renderConnections() {
+  if (!showConns) return;
+  const g = svgEl('g', {id:'conns-group', opacity: 0.6});
+  CONNECTIONS.forEach((conn, i) => {
+    const from = compMap[conn.f];
+    const to = compMap[conn.t];
+    if (!from || !to) return;
+    const color = NET_COLORS[conn.type] || '#666';
+    const isCross = from.stage !== to.stage;
+    const sw = isCross ? 1.8 : 1.2;
+    const dash = isCross ? '' : '4 3';
+    const opacity = isCross ? 0.75 : 0.45;
+
+    const x1 = from.cx, y1 = from.cy;
+    const x2 = to.cx, y2 = to.cy;
+    const dx = Math.abs(x2 - x1) * 0.45;
+    const dy = Math.abs(y2 - y1) * 0.2;
+
+    let cp1x, cp1y, cp2x, cp2y;
+    if (Math.abs(x2 - x1) > Math.abs(y2 - y1)) {
+      cp1x = x1 + dx; cp1y = y1;
+      cp2x = x2 - dx; cp2y = y2;
+    } else {
+      cp1x = x1; cp1y = y1 + (y2-y1)*0.45;
+      cp2x = x2; cp2y = y2 - (y2-y1)*0.45;
+    }
+
+    const path = svgEl('path', {
+      class: 'conn-line',
+      'data-conn': i,
+      'data-from': conn.f,
+      'data-to': conn.t,
+      'data-net': conn.net,
+      d: `M${x1},${y1} C${cp1x},${cp1y} ${cp2x},${cp2y} ${x2},${y2}`,
+      stroke: color,
+      'stroke-width': sw,
+      'stroke-opacity': opacity,
+      fill: 'none',
+      'stroke-dasharray': dash,
+    });
+    g.appendChild(path);
+  });
+  svg.insertBefore(g, svg.firstChild);
+}
+
+function highlightConns(ref, on) {
+  document.querySelectorAll('.conn-line').forEach(line => {
+    const isRelated = line.dataset.from === ref || line.dataset.to === ref;
+    if (on && isRelated) {
+      line.setAttribute('stroke-opacity', '1');
+      line.setAttribute('stroke-width', parseFloat(line.getAttribute('stroke-width')) * 1.8);
+    } else if (on) {
+      line.setAttribute('stroke-opacity', '0.1');
+    } else {
+      const isCross = compMap[line.dataset.from]?.stage !== compMap[line.dataset.to]?.stage;
+      line.setAttribute('stroke-opacity', isCross ? '0.75' : '0.45');
+      line.setAttribute('stroke-width', isCross ? '1.8' : '1.2');
+    }
+  });
+}
+
+function showDetail(ref) {
+  const comp = compMap[ref];
+  if (!comp) return;
+  const stage = stageMap[comp.stage];
+  const conns = compConns[ref] || [];
+  const panel = document.getElementById('detail-panel');
+
+  const connHTML = conns.map(c => {
+    const dir = c.direction === '→' ? `→ ${c.t}` : `← ${c.f}`;
+    const color = NET_COLORS[c.type] || '#666';
+    return `<div class="conn-item">
+      <span class="net" style="color:${color}">${c.net}</span>
+      <span style="color:#8b949e"> ${c.direction} </span>
+      <span class="peer">${c.direction === '→' ? c.t : c.f}</span>
+    </div>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <h2>Detalhes do Componente</h2>
+    <div class="detail-ref">${comp.ref}</div>
+    <div class="detail-value">${comp.value}</div>
+    <div class="detail-mpn">MPN: ${comp.mpn}</div>
+    <div class="detail-lcsc">LCSC: <a href="https://www.lcsc.com/product-detail/${comp.lcsc}.html" style="color:#58a6ff" target="_blank">${comp.lcsc}</a></div>
+    <div class="detail-pkg">Package: ${comp.pkg}</div>
+    <div class="detail-desc">${comp.desc}</div>
+    <div class="detail-stage" style="background:${stage.color}22;color:${stage.color};border:1px solid ${stage.color}44">${stage.name}</div>
+    <div class="detail-conns">
+      <h3>Conexões (${conns.length})</h3>
+      ${connHTML || '<div style="color:#8b949e;font-style:italic">Nenhuma conexão mapeada</div>'}
+    </div>`;
+
+  document.querySelectorAll('.comp-group').forEach(g => g.classList.remove('selected'));
+  const sel = document.querySelector(`.comp-group[data-ref="${ref}"]`);
+  if (sel) sel.classList.add('selected');
+}
+
+function svgEl(tag, attrs = {}) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+  return el;
+}
+
+function truncate(s, n) { return s.length > n ? s.slice(0, n-1) + '…' : s; }
+
+// Zoom/Pan
+let transform = {x:0, y:0, scale:1};
+const wrap = document.getElementById('canvas-wrap');
+
+function applyTransform() {
+  svg.style.transform = `translate(${transform.x}px,${transform.y}px) scale(${transform.scale})`;
+  svg.style.transformOrigin = '0 0';
+}
+
+let panning = false, panStart = {x:0,y:0}, panOrigin = {x:0,y:0};
+
+wrap.addEventListener('mousedown', e => {
+  if (e.target.closest('.comp-group')) return;
+  panning = true;
+  wrap.classList.add('panning');
+  panStart = {x: e.clientX, y: e.clientY};
+  panOrigin = {x: transform.x, y: transform.y};
+});
+window.addEventListener('mousemove', e => {
+  if (!panning) return;
+  transform.x = panOrigin.x + (e.clientX - panStart.x);
+  transform.y = panOrigin.y + (e.clientY - panStart.y);
+  applyTransform();
+});
+window.addEventListener('mouseup', () => { panning = false; wrap.classList.remove('panning'); });
+
+wrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const factor = e.deltaY < 0 ? 1.1 : 0.9;
+  const rect = wrap.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  transform.x = mx - (mx - transform.x) * factor;
+  transform.y = my - (my - transform.y) * factor;
+  transform.scale *= factor;
+  applyTransform();
+}, {passive: false});
+
+function resetView() { transform={x:0,y:0,scale:1}; applyTransform(); }
+function zoomIn() { transform.scale *= 1.2; applyTransform(); }
+function zoomOut() { transform.scale /= 1.2; applyTransform(); }
+function toggleConns() { showConns = !showConns; renderAll(); }
+
+// Initial fit to window
+window.addEventListener('load', () => {
+  const ww = wrap.clientWidth;
+  const wh = wrap.clientHeight;
+  const svgW = 1900, svgH = 1160;
+  const scaleX = ww / svgW;
+  const scaleY = wh / svgH;
+  transform.scale = Math.min(scaleX, scaleY) * 0.97;
+  transform.x = (ww - svgW * transform.scale) / 2;
+  transform.y = (wh - svgH * transform.scale) / 2;
+  applyTransform();
+});
+
+renderAll();
+</script>
+</body>
+</html>

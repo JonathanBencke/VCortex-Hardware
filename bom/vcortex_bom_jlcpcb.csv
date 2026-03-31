@@ -1,0 +1,98 @@
+Reference,Value,MPN,Footprint_KiCad,LCSC_Part,Manufacturer,Description,JLCPCB_Category,Qty,Assembly,Notes
+Q1,PMV45EN2R,PMV45EN2R-JSM,Package_TO_SOT_SMD:SOT-23,C53113978,JSMSEMI,P-MOSFET VDS=-40V ID=-3A protecao inversao polaridade,Extended,1,PCBA,Alt Nexperia C426872 (mais caro). |VDS|=40V obrigatorio (TVS clamp 35.5V). R_GATE 10k ao GND
+R_GATE,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Pull-down gate Q1 -> GND,Basic,1,PCBA,
+F1,1812L300MR,1812L300MR,Resistor_SMD:R_1812_4532Metric,C127824,Littelfuse,PTC Polyfuse 3A/30V 1812 resetavel,Extended,1,PCBA,Alt C135366 (JDTfuse ASMD1812-300). Protecao sobrecorrente V_BATT
+TVS1,SMDJ22A,SMDJ22A,Diode_SMD:D_SMC,C4154722,Littelfuse,TVS 22V/1500W load dump clamp 35.5V (ISO7637-2),Extended,1,PCBA,Unidirecional: anodo->GND catodo->VBATT_PROT
+L1,10uH/4A,CKCS6028-10uH/M,Inductor_SMD:L_6.0x6.0mm,C354625,CENKER,Indutor shielded 10uH/4A filtro ENTRADA Buck (NAO chaveamento),Extended,1,PCBA,DIFERENTE do L_SW (Buck switch). Faz par PI com C1 para atenuar ISO7637 pulsos 1/2/3. Isat>=4A necessario
+C1,100uF/50V,RX100UF50V90RV0105,Capacitor_SMD:CP_Elec_6.3x7.7mm,C3445238,KNSCHA,Electrolytic 100uF/50V bulk entrada Buck SMD D6.3x7mm,Extended,1,PCBA,Tensao 50V necessaria (TVS clamp 35.5V max)
+C_IN,100nF/100V X7R,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,MLCC 100nF 100V X7R 0402 decoupling VIN LMR14020,Basic,1,PCBA,
+C_BOOT,100nF X7R,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,MLCC 100nF X7R 0402 bootstrap BOOT->SW LMR14020,Basic,1,PCBA,
+U_BUCK,LMR14020,LMR14020SDDAR,Package_TO_SOT_SMD:SOT-23-6,C187824,Texas Instruments,Buck converter 40V/2A VOUT=5V fsw=1.5MHz SOT-23-6,Extended,1,PCBA,9x thermal vias pad GND + copper fill >=4cm2 obrigatorio
+L_SW,4.7uH/2A,XRNR4030-4.7uH/M,Inductor_SMD:L_4.0x4.0mm,C5289366,XR,Indutor chaveamento Buck 4.7uH shielded SW->saida Isat>=2A,Extended,1,PCBA,DIFERENTE de L1 (filtro entrada). Alt: C354587 (CENKER CKCS4030-4.7uH/M). Verificar Isat>=2A
+R_BOOT_BK,100k 1%,RC0402FR-07100KL,Resistor_SMD:R_0402_1005Metric,C60491,Yageo,Feedback top LMR14020 100k. CORRIGIDO: codigo anterior C25741 era 10k,Basic,1,PCBA,CRITICO: 100k nao 10k. VOUT=0.765*(1+100k/18k)=4.99V
+R_BOT_BK,18k 1%,0402WGF1802TCE,Resistor_SMD:R_0402_1005Metric,C25762,UNI-ROYAL,Feedback bot LMR14020 18k -> VOUT=5V,Basic,1,PCBA,CORRIGIDO de 56.2k para 18k. VOUT=0.765*(1+100k/18k)=4.99V
+C_BOUT1,22uF/10V X5R,TCC0805X5R226M100FT,Capacitor_SMD:C_0805_2012Metric,C380338,CCTC,MLCC 22uF 10V X5R 0805 saida Buck bulk 1,Extended,1,PCBA,FOOTPRINT ALTERADO 1206->0805. Alt: C109314 (YAGEO CC0805MKX5R6BB226)
+C_BOUT2,22uF/10V X5R,TCC0805X5R226M100FT,Capacitor_SMD:C_0805_2012Metric,C380338,CCTC,MLCC 22uF 10V X5R 0805 saida Buck bulk 2,Extended,1,PCBA,FOOTPRINT ALTERADO 1206->0805
+C_BOUT3,100nF X7R,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,MLCC 100nF X7R 0402 bypass saida Buck media freq,Basic,1,PCBA,
+C_BOUT4,10nF X7R,CC0402KRX7R9BB103,Capacitor_SMD:C_0402_1005Metric,C15849,Yageo,MLCC 10nF X7R 0402 bypass saida Buck alta freq,Basic,1,PCBA,Fecha impedancia >10MHz para harmonicas do chaveamento
+L_FILT,10uH/1A,SMNR4020-10UH,Inductor_SMD:L_4.0x2.0mm,C135263,Shun Xiang Nuo,Indutor filtro pos-Buck antes LDO 10uH 4020 shielded,Extended,1,PCBA,NOVO - era ausente. 40dB atenuacao @1.5MHz. Alt: C2929419 (SHOU HAN CY43-10UH 4.5x4mm)
+C_FILT,10uF X5R,CL21A106KAYNNNE,Capacitor_SMD:C_0805_2012Metric,C96446,Samsung,MLCC 10uF X5R 0805 cap saida filtro L_FILT,Basic,1,PCBA,Proximo ao VIN do AP2112K
+U_LDO,AP2112K-3.3,AP2112K-3.3TRG1,Package_TO_SOT_SMD:SOT-23-5,C51118,Diodes Inc,LDO 3.3V/600mA dropout 250mV SOT-23-5,Extended,1,PCBA,9x thermal vias GND + copper fill >=4cm2 OBRIGATORIO. P_max=0.68W em caixa fechada
+C_LDO_IN,1uF X5R,CL05A105KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C52923,Samsung,MLCC 1uF X5R 0402 entrada LDO,Basic,1,PCBA,
+C_LDO_OUT,10uF X5R,CL21A106KAYNNNE,Capacitor_SMD:C_0805_2012Metric,C96446,Samsung,MLCC 10uF X5R 0805 saida LDO,Basic,1,PCBA,
+U_MCU,ESP32-WROOM-32E,ESP32-WROOM-32E,RF_Module:ESP32-WROOM-32,C701342,Espressif,ESP32 dual-core 240MHz WiFi BLE 4MB flash antena PCB,Extended,1,PCBA,Keep-out antena 15x3mm obrigatorio. GPIO12 PULL-DOWN obrigatorio
+C_MCU1,10uF X5R,CL21A106KAYNNNE,Capacitor_SMD:C_0805_2012Metric,C96446,Samsung,MLCC 10uF X5R 0805 decoupling ESP32 bulk lado A,Basic,1,PCBA,
+C_MCU2,10uF X5R,CL21A106KAYNNNE,Capacitor_SMD:C_0805_2012Metric,C96446,Samsung,MLCC 10uF X5R 0805 decoupling ESP32 bulk lado B,Basic,1,PCBA,
+C_MCU3,100nF X7R,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,MLCC 100nF X7R 0402 bypass ESP32 VCC x2 (<2mm dos pinos),Basic,2,PCBA,Qty=2
+R_GPIO0,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Pull-UP GPIO0 -> +3V3 (BOOT mode strapping),Basic,1,PCBA,
+R_GPIO5,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Pull-UP GPIO5 -> +3V3 (CAN_STB default=STANDBY),Basic,1,PCBA,Firmware inicializa GPIO5=LOW para ativar CAN. HIGH=STANDBY
+R_GPIO12,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,PULL-DOWN GPIO12 -> GND OBRIGATORIO (HIGH=flash 1.8V=destruicao ESP32),Basic,1,PCBA,CRITICO: pull-DOWN para GND nao pull-up!
+R_GPIO15,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Pull-UP GPIO15 -> +3V3 (KLINE_TX idle high + strapping boot logs),Basic,1,PCBA,
+R_EN,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Pull-UP EN ESP32 -> +3V3,Basic,1,PCBA,
+C_EN,1uF X5R,CL05A105KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C52923,Samsung,Filtro RC pino EN para reset limpo na energizacao,Basic,1,PCBA,
+R_LED,330R,0402WGF3300TCE,Resistor_SMD:R_0402_1005Metric,C25104,UNI-ROYAL,Serie LED status GPIO2 330Ohm 0402. CORRIGIDO: codigo anterior C17738 era 510Ohm 0805,Basic,1,PCBA,LCSC anterior C17738 era erro (510Ohm 0805)
+LED1,LED verde 0402,19-217/GHC-YR1S2/3T,LED_SMD:LED_0402_1005Metric,C965812,Everlight,LED 0402 verde status GPIO2,Basic,1,PCBA,Qualquer LED 0402 verde 2V/20mA funciona
+R_V1,100k,RC0402FR-07100KL,Resistor_SMD:R_0402_1005Metric,C60491,Yageo,Divisor VBATT top 100k -> GPIO34 ADC. CORRIGIDO: codigo anterior C25741 era 10k,Basic,1,PCBA,CRITICO: 100k nao 10k. V_ADC=VBATT*(22k/122k)=0.18*VBATT
+R_V2,22k 1%,0402WGF2202TCE,Resistor_SMD:R_0402_1005Metric,C25768,UNI-ROYAL,Divisor VBATT bot 22k -> GND. CORRIGIDO: era 10k. V_ADC=VBATT*0.18,Basic,1,PCBA,V_ADC=12V*0.18=2.16V / 16V*0.18=2.88V -> dentro do range ESP32 ADC
+C_ADC,100nF,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,Filtro ADC VBATT entre GPIO34 e GND,Basic,1,PCBA,Reduz ruido de amostragem do ADC
+NTC1,10k B3950,NCP15XV103E03RC,Resistor_SMD:R_0402_1005Metric,C5221675,Murata,NTC termistor 10k B3950 0402 temperatura interna GPIO36,GlobalSourcing,1,PCBA,Sem estoque LCSC - JLCPCB Global Sourcing. Alt: C525374 (RESI TCTR0402F10K0F3980T) se disponivel
+R_NTC,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Pull-UP NTC -> +3V3 (GPIO36),Basic,1,PCBA,
+C_NTC,100nF,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,Filtro ADC NTC entre GPIO36 e GND,Basic,1,PCBA,
+R_S_H,10R,RC0402FR-0710RL,Resistor_SMD:R_0402_1005Metric,C138066,Yageo,Resistor SERIE CANH 10Ohm. CORRIGIDO: codigo anterior C25744 era 10k,Basic,1,PCBA,CRITICO: 10 Ohm nao 10k. Posicionar logo apos OBD2. Limita corrente ESD
+R_S_L,10R,RC0402FR-0710RL,Resistor_SMD:R_0402_1005Metric,C138066,Yageo,Resistor SERIE CANL 10Ohm. CORRIGIDO: codigo anterior C25744 era 10k,Basic,1,PCBA,CRITICO: 10 Ohm nao 10k. Idem R_S_H
+TVS2,PESD2CAN,PESD2CAN,Package_TO_SOT_SMD:SOT-363_SC-70-6,C21713986,NXP,ESD/TVS diferencial CAN +-8kV SOT-363,Extended,1,PCBA,Posicionar imediatamente apos R_S_H/R_S_L na borda do PCB
+CMC1,ACM2012H-900-2P,ACM2012H-900-2P-T002,Inductor_SMD:TDK_ACM2012,C448605,TDK,Common Mode Choke 900Ohm@100MHz barramento CAN,Extended,1,PCBA,Entre PESD2CAN e ferrites FB1/FB2
+FB1,BLM21PG601SN1D,BLM21PG601SN1D,Inductor_SMD:L_0805_2012Metric,C41556732,muRata,Ferrite 600Ohm@100MHz 0805 CANH. CORRIGIDO: C21179 era NOT_FOUND,Extended,1,PCBA,
+FB2,BLM21PG601SN1D,BLM21PG601SN1D,Inductor_SMD:L_0805_2012Metric,C41556732,muRata,Ferrite 600Ohm@100MHz 0805 CANL. CORRIGIDO: C21179 era NOT_FOUND,Extended,1,PCBA,
+U_CAN,TCAN1044VDRQ1,TCAN1044VDRQ1,Package_SO:SOIC-8_3.9x4.9mm_P1.27mm,C1852061,Texas Instruments,CAN transceiver ISO11898-2 1Mbps 5V AEC-Q100,Extended,1,PCBA,STB: HIGH=STANDBY. Firmware inicializa GPIO5=LOW para operar
+C_CAN_VCC,100nF X7R,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,Bypass VCC TCAN1044V,Basic,1,PCBA,
+C_CAN_BULK,1uF X5R,CL05A105KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C52923,Samsung,Bulk VCC TCAN1044V,Basic,1,PCBA,
+C_VREF,100nF X7R,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,Cap VREF pino8 TCAN1044V -> GND,Basic,1,PCBA,
+R_CAN_G1,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Divisor RXD CAN top 10k (TCAN RXD 5V -> GPIO19 3.3V),Basic,1,PCBA,
+R_CAN_G2,20k,RC0402FR-0720KL,Resistor_SMD:R_0402_1005Metric,C93942,Yageo,Divisor RXD CAN bot 20k (GPIO19 -> GND). CORRIGIDO: C25803 era 10k 0603,Basic,1,PCBA,CRITICO: 20k nao 10k. V_GPIO19=5V*20k/30k=3.33V. Codigo anterior C25803 era ERRO (10k 0603)
+Q4,BSS138,BSS138LT1G,Package_TO_SOT_SMD:SOT-23,C49435659,ON Semi,N-MOSFET chave terminacao CAN controlado por GPIO25,Basic,1,PCBA,
+R_TERM,120R 1%,RC0402FR-07120RL,Resistor_SMD:R_0402_1005Metric,C25779,Yageo,Terminacao CAN 120Ohm 1% 0402,Basic,1,PCBA,
+R_TERM_G,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Pull-DOWN gate Q4 -> GND (terminacao desativada por default),Basic,1,PCBA,
+U_KLINE,L9637D,L9637D,Package_SO:SOIC-8_3.9x4.9mm_P1.27mm,C153038,STMicroelectronics,K-Line transceiver ISO9141 KWP2000 SO-8 5V,Extended,1,PCBA,Estoque baixo C153038. Alt: MC33290 NXP se indisponivel
+C_K_VCC,10uF X5R,CL21A106KAYNNNE,Capacitor_SMD:C_0805_2012Metric,C96446,Samsung,Bulk VCC L9637D 10uF,Basic,1,PCBA,CRITICO - sem este bulk o L9637D pode oscilar na linha K
+C_K_BYP,100nF X7R,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,Bypass VCC L9637D 100nF,Basic,1,PCBA,
+U_LS1,74LVC1T45GW,74LVC1T45GW126,Package_TO_SOT_SMD:SOT-363_SC-70-6,C478004,NXP,Level shifter 3.3V->5V KLINE TX (GPIO15->L9637D TXD),Extended,1,PCBA,
+TVS3,SMCJ24A,SMCJ24A,Diode_SMD:D_SMC,C42440493,Littelfuse,TVS 24V/1500W SMC K-Line protecao,Extended,1,PCBA,
+R_K,100R,RC0402FR-07100RL,Resistor_SMD:R_0402_1005Metric,C106232,Yageo,Serie K-LINE 100Ohm limitador corrente,Basic,1,PCBA,CORRIGIDO: C104 era NOT_FOUND
+R_KPU_A,510R,0402WGF5100TCE,Resistor_SMD:R_0402_1005Metric,C25123,UNI-ROYAL,Pull-up K-Line KBAT=VBATT modo veiculo ISO9141,Basic,1,PCBA,Jumper selecionavel posicao A. CORRIGIDO: C27522 era NOT_FOUND
+R_KPU_B,1k,RC0402FR-071KL,Resistor_SMD:R_0402_1005Metric,C21190,Yageo,Pull-up K-Line KBAT=5V modo bancada/debug,Basic,1,PCBA,Jumper selecionavel posicao B
+R_EN_K,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Pull-UP EN L9637D -> +5V (sempre habilitado),Basic,1,PCBA,
+U_GNSS,NEO-M9N-00B,NEO-M9N-00B,RF_GPS:u-blox_NEO-M9N_LGA-24,GLOBAL_SOURCING,u-blox,GNSS 10Hz LGA-24 GPS/GLONASS/Galileo/BeiDou,GlobalSourcing,1,PCBA,NAO na LCSC. JLCPCB Global Sourcing ou consignment. MPN: NEO-M9N-00B
+FB_GNSS,BLM21PG601SN1D,BLM21PG601SN1D,Inductor_SMD:L_0805_2012Metric,C41556732,muRata,Ferrite 600Ohm@100MHz isolamento VCC GNSS. CORRIGIDO: C21179 era NOT_FOUND,Extended,1,PCBA,
+C_GNSS_BULK,10uF X5R,CL21A106KAYNNNE,Capacitor_SMD:C_0805_2012Metric,C96446,Samsung,Bulk VCC GNSS 10uF,Basic,1,PCBA,CRITICO: sem bulk o GNSS tem dropout no cold-start
+C_GNSS_100N,100nF X7R,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,Bypass VCC GNSS 100nF (<0.5mm do pino VCC),Basic,1,PCBA,
+C_GNSS_10N,10nF NP0,CC0402JRNPO9BN103,Capacitor_SMD:C_0402_1005Metric,C15849,Yageo,Bypass VCC_IO GNSS 10nF NP0 alta freq,Basic,1,PCBA,NP0/C0G obrigatorio. <0.5mm do pino VCC_IO
+L_BIAS,47nH RF,HP0603-47NH-N,Inductor_SMD:L_0603_1608Metric,C2903684,Chilisin,Indutor RF Bias-T antena ativa 47nH 0603,Extended,1,PCBA,FOOTPRINT 0603 (nao 0402). Bias-T para antena patch ativa. Imp@1.575GHz ~465Ohm
+C_BLOCK,100pF NP0,CC0402JRNPO9BN101,Capacitor_SMD:C_0402_1005Metric,C14858,Yageo,DC-block RF Bias-T 100pF NP0 0402,Basic,1,PCBA,NP0/C0G obrigatorio (estabilidade em 1575MHz). DC-block RF_IN GNSS
+R_PPS,100R,RC0402FR-07100RL,Resistor_SMD:R_0402_1005Metric,C106232,Yageo,Serie GNSS PPS -> GPIO35 protecao ESD,Basic,1,PCBA,CORRIGIDO: C104 era NOT_FOUND. GPIO35=GNSS_PPS
+D_BAT,1N5819,1N5819,Diode_SMD:D_SOD-323,C48997863,KTP,Schottky 1A/40V SOD-323 carga supercap GNSS backup,Extended,1,PCBA,CORRIGIDO: C8681 era OUT. KTP 1N5819 SOD-323 204k unidades
+R_BAT,100R,RC0402FR-07100RL,Resistor_SMD:R_0402_1005Metric,C106232,Yageo,Limitador corrente carga supercap BAT1,Basic,1,PCBA,CORRIGIDO: C104 era NOT_FOUND
+BAT1,0.1F/5.5V,ASR-M-10-0.1F,Capacitor_SMD:CP_Elec_12.8x6.0mm,C6075487,Yezhan,Supercap backup GNSS RTC 0.1F 5.5V SMD 12.8x6mm,Extended,1,PCBA,CPX3225A nao disponivel LCSC. Footprint ALTERADO para 12.8x6mm. Alt C496056 (Yezhan 2627 pkg se disponivel)
+J_ANT,U.FL,U.FL-R-SMT-1,Connector:U.FL,C381116,Hirose,Conector U.FL 50Ohm antena GNSS externa SMD,Extended,1,PCBA,Trilha 50Ohm microstrip 0.34mm (<10mm comprimento)
+J_SD,MicroSD,MLD-TF PUSH-H18,Connector_Card:MicroSD_HC_Wuerth_693072010801,C52750848,Minlenda,Slot MicroSD push-push SMD horizontal,Extended,1,PCBA,CORRIGIDO: C780928 era OUT. GPIO4=CS GPIO13=MOSI GPIO14=CLK GPIO23=MISO
+C_SD_BULK,10uF X5R,CL21A106KAYNNNE,Capacitor_SMD:C_0805_2012Metric,C96446,Samsung,Bulk VDD MicroSD,Basic,1,PCBA,
+C_SD_BYP,100nF X7R,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,Bypass VDD MicroSD,Basic,1,PCBA,
+R_SD_CS,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Pull-UP SD_CS GPIO4 -> +3V3,Basic,1,PCBA,
+ESD1,PRTR5V0U2X,PRTR5V0U2X,Package_TO_SOT_SMD:SOT-363_SC-70-6,C53446675,NXP,ESD 2 canais header expansao I2C/GPIO,Extended,1,PCBA,
+ESD2,PRTR5V0U2X,PRTR5V0U2X,Package_TO_SOT_SMD:SOT-363_SC-70-6,C53446675,NXP,ESD 2 canais header expansao GPIO,Extended,1,PCBA,
+R_I2C_SDA,4k7,RC0402FR-074K7L,Resistor_SMD:R_0402_1005Metric,C105871,Yageo,Pull-UP I2C SDA GPIO21 -> +3V3,Basic,1,PCBA,CORRIGIDO: C25900 era OUT. C105871 tem 2.4M unidades
+R_I2C_SCL,4k7,RC0402FR-074K7L,Resistor_SMD:R_0402_1005Metric,C105871,Yageo,Pull-UP I2C SCL GPIO22 -> +3V3,Basic,1,PCBA,CORRIGIDO: C25900 era OUT. C105871 tem 2.4M unidades
+U_USB,CP2102N,CP2102N-A02-GQFN28R,Package_DFN_QFN:QFN-28-1EP_5x5mm_P0.5mm,C6568,Silicon Labs,USB-UART bridge QFN-28 auto-programacao,Extended,1,PCBA,
+C_USB_VDD,100nF X7R,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,Bypass VDD CP2102N,Basic,1,PCBA,
+C_USB_BULK,10uF X5R,CL21A106KAYNNNE,Capacitor_SMD:C_0805_2012Metric,C96446,Samsung,Bulk VDD CP2102N,Basic,1,PCBA,
+C_REGIN,1uF X5R,CL05A105KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C52923,Samsung,Cap regulador interno CP2102N REGIN pin,Basic,1,PCBA,
+C_VBUS,10uF X5R,CL21A106KAYNNNE,Capacitor_SMD:C_0805_2012Metric,C96446,Samsung,Debounce VBUS USB deteccao,Basic,1,PCBA,
+FB_USB,BLM21PG601SN1D,BLM21PG601SN1D,Inductor_SMD:L_0805_2012Metric,C41556732,muRata,Ferrite 600Ohm@100MHz filtra ruido VBUS USB. CORRIGIDO: C21179 era NOT_FOUND,Extended,1,PCBA,
+Q2,BC817-40LT1G,BC817-40LT1G,Package_TO_SOT_SMD:SOT-23,C22400355,ON Semi,NPN BJT auto-prog DTR -> GPIO0,Basic,1,PCBA,
+Q3,BC817-40LT1G,BC817-40LT1G,Package_TO_SOT_SMD:SOT-23,C22400355,ON Semi,NPN BJT auto-prog RTS -> EN,Basic,1,PCBA,
+R_DTR,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Resistor base Q2 DTR->GPIO0,Basic,1,PCBA,
+R_RTS,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Resistor base Q3 RTS->EN,Basic,1,PCBA,
+C_DTR,100nF X7R,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,Diferenciador pulso GPIO0 coletor Q2 - CRITICO anti-reset-loop,Basic,1,PCBA,CRITICO: sem este cap ha reset loop durante comunicacao serial
+C_RTS,100nF X7R,CL05B104KO5NNNC,Capacitor_SMD:C_0402_1005Metric,C14663,Samsung,Diferenciador pulso EN coletor Q3 - CRITICO anti-reset-loop,Basic,1,PCBA,CRITICO: cria pulso de reset ~1ms. tau=R_EN*C_RTS=10k*100nF=1ms
+J_USB,USB Micro-B SMD,USB_MICRO_B,Connector_USB:USB_Micro-B_Wuerth_629105150521,C10418,Amphenol,Conector USB Micro-B SMD programacao/debug,Extended,1,PCBA,
+J1,OBD2 J1962 THT,OBD2_16P_THT,Connector_PinHeader_2.54mm:PinHeader_2x08_P2.54mm,NOT_PCBA,N/A,Conector OBD2 macho J1962 16 pinos THT,Manual,1,MANUAL,NAO incluir no PCBA JLCPCB. Soldar manualmente. AliExpress: OBD2 male PCB connector THT

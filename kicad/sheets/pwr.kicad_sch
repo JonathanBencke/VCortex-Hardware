@@ -1,0 +1,89 @@
+(kicad_sch
+  (version 20231120)
+  (generator "eeschema")
+  (generator_version "10.0")
+  (uuid "00000000-0000-0000-0000-000000000002")
+  (paper "A3")
+  (title_block
+    (title "V-Cortex - Alimentacao e Protecao")
+    (rev "v1.1")
+    (company "V-Cortex")
+    (comment 1 "Stage 1: Protecao entrada + Buck 40V/2A 5V + Filtro L_FILT + LDO 3.3V/600mA")
+    (comment 2 "3 indutores distintos: L1(filtro entrada 10uH) + L_SW(Buck 4.7uH) + L_FILT(pos-Buck 10uH)")
+    (comment 3 "Thermal CRITICO: LDO dissipa 0.68W em caixa fechada — 9x thermal vias + copper fill >=4cm2")
+  )
+
+  (lib_symbols)
+
+  ;; ============================================================
+  ;; BLOCO 1: PROTECAO DE ENTRADA
+  ;; Ordem: OBD2 pino 16 -> Q1(P-MOS) -> F1(Polyfuse) -> TVS1 // L1(10uH) -> C1(100uF) -> Buck
+  ;; ============================================================
+
+  (text "BLOCO 1 — PROTECAO DE ENTRADA V_BATT\n\nCIRCUITO (ordem da esquerda para direita):\n\n  OBD2-pino16 ──[Q1 P-MOSFET]──[F1 Polyfuse]──┬──[L1 10uH]──[C1 100uF]── V_BUCK_IN\n                                               │\n                                            [TVS1 SMDJ22A]\n                                               │\n                                              GND\n\nQ1 — PMV45EN2R ou SI2359DS (P-MOSFET SOT-23)\n  LCSC: C2976873 (PMV45EN2R Nexperia, |VDS|=40V, ID=-3A)\n  Alternativa: SI2359DS (Vishay, |VDS|=40V — pode nao ter LCSC, verificar)\n  Gate -> GND via R_GATE(10k). Source -> VBATT. Drain -> saida protegida\n  Com polaridade correta: VGS = GND - VBATT = negativo -> conduz\n  Com inversao: VGS = GND - (-VBATT) = positivo -> bloqueia\n  ESCOLHA DEFINITIVA: usar componente com |VDS| >= 40V (TVS clamp 35.5V)\n  R_GATE: 10k 0402 (LCSC: C25741)\n\nTVS1 — SMDJ22A (C4154722 Littelfuse)\n  22V/1500W, clamp 35.5V, SMC/DO-214AB\n  Posicao: paralelo entre VBATT_PROT e GND, APOS o P-MOSFET\n  Protege contra ISO7637-2 Pulso 5 (Load Dump +87V/400ms)\n  Nota: SMDJ22A e unidirecional (anodo -> GND, catodo -> VBATT_PROT)\n\nF1 — Polyfuse 3A/30V MF-MSMF300-2 (LCSC: C383507 Bourns)\n  PTC resetavel 1812, corrente de fusao 3A, tensao 30V\n  Em serie com VBATT apos o P-MOSFET e antes do TVS\n\nL1 — Indutor 10uH/4A IHSM-5832EH100L (LCSC: C408444 Sunlord SWPA6028S100MT)\n  10uH/4A, shielded, resistencia serie baixa\n  FUNCAO: filtro de ENTRADA do Buck — atenua transientes e ruido da linha VBATT\n  Faz par PI com C1 (100uF) — atenua ISO7637-2 pulsos 1,2,3\n  NAO e o indutor de chaveamento do Buck (esse e o L_SW abaixo)\n\nC1 — 100uF/50V polymer SMD (LCSC: C428637 Panasonic EEEFP1H101AP)\n  Bulk capacitor entrada — tensao 50V escolhida para margem apos TVS clamp 35.5V\n  Alternativa: MLCC 100uF/50V 1210 (maior, porem menor ESR)\n  Posicionar proximo ao pino VIN do LMR14020"
+    (at 20 20)
+    (effects (font (size 1.5 1.5)) (justify left top))
+    (uuid "11000001-0000-0000-0000-000000000001")
+  )
+
+  ;; ============================================================
+  ;; BLOCO 2: BUCK CONVERTER LMR14020 + L_SW
+  ;; ATENCAO: L_SW (4.7uH) e DIFERENTE de L1 (filtro 10uH na entrada)
+  ;; ============================================================
+
+  (text "BLOCO 2 — BUCK CONVERTER LMR14020 + L_SW 4.7uH\n\nCIRCUITO:\n\n  V_BUCK_IN ──[C_IN 100nF]── LMR14020\n                VIN            │\n              [C_BOOT 100nF]   SW node ──[L_SW 4.7uH]──┬── +5V\n              BOOT -> SW_node                            ├── C_BOUT1 22uF\n                               FB ──[R_BOT_BK 56.2k]──┘ ├── C_BOUT2 22uF\n                               │                         ├── C_BOUT3 100nF\n                            [R_BOOT_BK 100k]             └── C_BOUT4 10nF\n                               │\n                              GND\n\nU_BUCK — LMR14020SDDAR (LCSC: C187824 Texas Instruments)\n  Buck 40V/2A, VOUT=5V, fsw=1.5MHz, SOT-23-6\n  Pinagem SOT-23-6:\n    1=BOOT (cap 100nF para SW), 2=VIN, 3=EN (-> VIN para sempre habilitar)\n    4=GND (pad exposto, thermal vias obrigatorio), 5=SW (-> L_SW), 6=FB\n  Formula: VOUT = 0.765 * (1 + R_BOOT_BK/R_BOT_BK)\n    Com 100k/56.2k: VOUT = 0.765 * (1 + 100k/56.2k) = 0.765 * 2.779 = 2.125... INCORRETO\n    CORRECAO: VOUT = VREF * (1 + R1/R2). VREF do LMR14020 = 0.765V\n    Para VOUT=5V: R1/R2 = (5/0.765 - 1) = 5.536\n    Com R1=100k: R2 = 100k/5.536 = 18.07k -> usar 18k 1%\n    *** CORRIGIR R_BOT_BK de 56.2k para 18k 1% ***\n    LCSC R_BOT_BK: buscar 18k 1% 0402 Yageo — ex C25792 (verificar valor exato)\n\nL_SW — Bourns SRR1260-4R7Y (indutor chaveamento Buck)\n  4.7uH, Isat >= 2A, blindado (toroidal fechado), baixo DCR\n  LCSC: verificar disponibilidade SRR1260-4R7Y ou equivalente\n  Alternativa: SWPA4020S4R7MT (Sunlord, verificar LCSC)\n  *** ESTE INDUTOR E DIFERENTE DO L1 (filtro de entrada 10uH) ***\n  Posicionamento CRITICO: formar loop minimo VIN_cap -> SW_node -> L_SW -> VOUT_cap\n\nCAPACITORES DO BUCK:\n  C_IN:    100nF/100V X7R 0402 (LCSC: C14663) — decoupling entrada VIN\n  C_BOOT:  100nF X7R 0402 (LCSC: C14663) — bootstrap BOOT->SW\n  C_BOUT1: 22uF/10V X5R 1206 (LCSC: C5403) — saida bulk 1\n  C_BOUT2: 22uF/10V X5R 1206 (LCSC: C5403) — saida bulk 2\n  C_BOUT3: 100nF X7R 0402 (LCSC: C14663) — bypass saida media freq\n  C_BOUT4: 10nF X7R 0402 (LCSC: C15849) — bypass saida alta freq (NOVO)\n    [C15849 = 10nF 50V X7R 0402 Yageo — verificar LCSC]\n\nTHERMAL BUCK (OBRIGATORIO):\n  Pad GND exposto do LMR14020: 9x thermal vias 0.3mm drill, grid 3x3\n  Copper fill GND >= 4cm2 no TOP e conectado ao plano GND interno\n  Ripple saida alvo: < 30mVpp a plena carga"
+    (at 20 300)
+    (effects (font (size 1.5 1.5)) (justify left top))
+    (uuid "11000002-0000-0000-0000-000000000001")
+  )
+
+  ;; ============================================================
+  ;; BLOCO 3: FILTRO L_FILT ENTRE BUCK E LDO
+  ;; Secao 3.2.3 do Engineering Guide — NOVO (estava ausente)
+  ;; ============================================================
+
+  (text "BLOCO 3 — FILTRO L_FILT POS-BUCK (5V -> LDO)\n\nFUNCAO: atenuar ripple de 1.5MHz do Buck antes de alimentar o LDO e ESP32/GNSS\nAtenuacao adicional: ~40dB @ 1.5MHz com L=10uH e C=10uF\n\nCIRCUITO:\n  +5V (Buck out) ──[L_FILT 10uH]──[C_FILT 10uF]──+── V_5V_FILT ──> AP2112K-3.3 VIN\n                                        │           └──> TCAN1044V VCC\n                                       GND              L9637D VCC\n                                                        CP2102N VCC\n\nL_FILT — SRR0604-100Y (LCSC: verificar C_SRR0604)\n  10uH blindado, baixo DCR, Bourns ou equivalente Sunlord\n  Alternativa LCSC: SWPA4020S100MT (Sunlord, 10uH/1A shielded)\n  *** ESTE INDUTOR E DIFERENTE DO L1 (10uH filtro entrada) ***\n  Corrente maxima: >= 1A (corrente tipica dos perifericos 5V)\n\nC_FILT — 10uF X5R 0805 (LCSC: C96446 Samsung CL21A106KAYNNNE)\n  Capacitor de saida do filtro L_FILT\n  Posicionar imediatamente apos L_FILT, proximo ao pino VIN do AP2112K\n\nNOTA: V_5V_FILT alimenta:\n  - AP2112K-3.3 VIN (que gera 3.3V para ESP32 e NEO-M9N)\n  - TCAN1044V VCC (5V nativo)\n  - L9637D VCC (5V nativo)\n  - CP2102N VBUS/VDD (5V via USB ou regulado)"
+    (at 600 20)
+    (effects (font (size 1.5 1.5)) (justify left top))
+    (uuid "11000003-0000-0000-0000-000000000001")
+  )
+
+  ;; ============================================================
+  ;; BLOCO 4: LDO AP2112K-3.3
+  ;; ============================================================
+
+  (text "BLOCO 4 — LDO AP2112K-3.3TRG1 (5V -> 3.3V / 600mA)\n\nCIRCUITO:\n  V_5V_FILT ──[C_LDO_IN 1uF]── AP2112K VIN\n                                AP2112K EN -> VIN (sempre habilitado)\n                                AP2112K VOUT ──[C_LDO_OUT 10uF]── +3V3\n\nU_LDO — AP2112K-3.3TRG1 (LCSC: C51118 Diodes Inc)\n  LDO 5V->3.3V, 600mA, dropout 250mV @ 600mA, SOT-23-5\n  Pinagem SOT-23-5:\n    1=EN (->VIN, sempre ON), 2=GND, 3=VIN(5V filtrado), 4=VOUT(3.3V), 5=NC\n\nCAPACITORES LDO:\n  C_LDO_IN:  1uF X5R 0402 (LCSC: C52923) — entrada, proximo ao pino VIN\n  C_LDO_OUT: 10uF X5R 0805 (LCSC: C96446) — saida, proximo ao pino VOUT\n\nANALISE TERMICA CRITICA:\n  P_LDO = (5V - 3.3V) * I_out = 1.7V * 0.4A_tipico = 0.68W\n  SOT-23-5 theta_ja = 250 C/W (sem copper)\n  T_juncao = 80C(amb) + 0.68W * 250 = 250C -> DESTRUICAO\n\n  COM copper pour 4cm2 (theta_ja_eff ~120 C/W):\n  T_juncao = 80C + 0.68W * 120 = 162C -> ainda critico\n\n  COM copper pour 4cm2 + 9x thermal vias + plano GND solido (theta_ja_eff ~60 C/W):\n  T_juncao = 80C + 0.68W * 60 = 121C -> aceitavel (T_max SOT-23 = 125C)\n  MARGEM MINIMA! Monitorar com NTC. Throttle BLE se T_int > 70C\n\n  ALTERNATIVA RECOMENDADA PARA PRODUCAO (secao 3.5.3):\n  Substituir LDO por segundo Buck LMR14020 direto para 3.3V\n  Economia: -0.68W de dissipacao continua na caixa fechada\n\nTHERMAL LDO (OBRIGATORIO):\n  Pad GND pino 2 alargado: 9x thermal vias 0.3mm drill\n  Copper fill GND >= 4cm2 ao redor e abaixo do AP2112K\n  Remover solder mask sobre copper fill (abertura para conveccao)"
+    (at 600 300)
+    (effects (font (size 1.5 1.5)) (justify left top))
+    (uuid "11000004-0000-0000-0000-000000000001")
+  )
+
+  ;; ============================================================
+  ;; HIERARQUIA — PINS DE SAIDA
+  ;; ============================================================
+  (hierarchical_label "VBATT_PROT" (shape output) (at 20 650 180)
+    (effects (font (size 1.27 1.27)) (justify right))
+    (uuid "11000005-0000-0000-0000-000000000001")
+  )
+  (hierarchical_label "+5V" (shape output) (at 1000 30 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "11000005-0000-0000-0000-000000000002")
+  )
+  (hierarchical_label "+3V3" (shape output) (at 1000 40 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "11000005-0000-0000-0000-000000000003")
+  )
+  (hierarchical_label "GND" (shape output) (at 1000 50 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid "11000005-0000-0000-0000-000000000004")
+  )
+
+  ;; ============================================================
+  ;; RESUMO BOM — STAGE 1 (Power)
+  ;; ============================================================
+  (text "RESUMO DE COMPONENTES — STAGE 1 (Power)\n\nREF        VALUE           LCSC         FOOTPRINT       FUNCAO\nQ1         PMV45EN2R       C2976873     SOT-23          P-MOSFET protecao inversao (|VDS|=40V)\nR_GATE     10k             C25741       0402            Gate pull-down Q1\nF1         MF-MSMF300-2    C383507      1812            Polyfuse 3A/30V\nTVS1       SMDJ22A         C4154722     SMC             TVS 22V/1500W load dump\nL1         10uH/4A         C408444      SWPA6028        Indutor filtro ENTRADA Buck (NAO chaveamento)\nC1         100uF/50V       C428637      CP_Elec_8x10    Bulk entrada Buck\nC_IN       100nF/100V      C14663       0402            Decoupling VIN LMR14020\nC_BOOT     100nF           C14663       0402            Bootstrap LMR14020\nU_BUCK     LMR14020SDDAR   C187824      SOT-23-6        Buck 40V/2A 5V\nL_SW       SRR1260-4R7Y    (verificar)  Bourns_SRR1260  Indutor CHAVEAMENTO Buck 4.7uH (DIFERENTE de L1!)\nR_BOOT_BK  100k            C25741       0402            Feedback top Buck\nR_BOT_BK   18k 1%          (verificar)  0402            Feedback bot Buck -> VOUT=5V CORRIGIDO de 56.2k\nC_BOUT1    22uF/10V        C5403        1206            Saida Buck bulk 1\nC_BOUT2    22uF/10V        C5403        1206            Saida Buck bulk 2\nC_BOUT3    100nF           C14663       0402            Saida Buck bypass 100nF\nC_BOUT4    10nF            C15849       0402            Saida Buck bypass 10nF (NOVO)\nL_FILT     10uH/1A         (verificar)  SRR0604         Filtro pos-Buck -> LDO (NOVO, era ausente)\nC_FILT     10uF X5R        C96446       0805            Cap filtro L_FILT (NOVO)\nU_LDO      AP2112K-3.3     C51118       SOT-23-5        LDO 5V->3.3V 600mA\nC_LDO_IN   1uF             C52923       0402            Entrada LDO\nC_LDO_OUT  10uF            C96446       0805            Saida LDO"
+    (at 20 680)
+    (effects (font (size 1.5 1.5)) (justify left top))
+    (uuid "11000006-0000-0000-0000-000000000001")
+  )
+)

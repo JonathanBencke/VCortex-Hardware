@@ -1,0 +1,54 @@
+Reference,Value,MPN,Footprint,LCSC_Part,Manufacturer,Description,Stage,Qty,Notes
+Q1,SI2359DS,SI2359DS,SOT-23,,Vishay,P-MOSFET VDS=-40V inversão polaridade,1,1,|VDS|>40V obrigatório (TVS clamp 35.5V)
+F1,Polyfuse 3A/30V,MF-MSMF300,1812,,Bourns,PTC fuse sobrecorrente V_BATT,1,1,
+TVS1,SMDJ22A,SMDJ22A,SMC,C4154722,Littelfuse,TVS 22V/1500W load dump V_BATT,1,1,
+L1,10uH/4A,IHSM-5832EH100L,IHSM5832,,Vishay,Indutor shielded filtro entrada Buck,1,1,Se indisponível buscar 10uH/4A shielded equiv (Sunlord/Wurth)
+C1,100uF/50V,,,,,Polymer cap bulk entrada,1,1,SMD low-profile <10mm alt. Se indisponível -> MLCC 100uF/50V 1210
+U_BUCK,LMR14020,LMR14020SDDAR,SOT-23-6,C187824,Texas Instruments,Buck 40V/2A 5V out,1,1,
+U_LDO,AP2112K-3.3,AP2112K-3.3TRG1,SOT-23-5,C51118,Diodes Inc,LDO 3.3V/600mA,1,1,
+C_IN,100nF/100V X7R,,,,,Decoupling entrada Buck,1,1,0402
+C_BOUT1,22uF/10V X5R,,,,,Saida Buck bulk 1,1,1,1206
+C_BOUT2,22uF/10V X5R,,,,,Saida Buck bulk 2,1,1,1206
+C_BOUT3,100nF X7R,,,,,Saida Buck bypass,1,1,0402
+C_BOOT,100nF X7R,,,,,Boot cap LMR14020,1,1,0402
+R_BOOT_BK,100k,,,,,Feedback resistor Buck (top),1,1,0402
+R_BOT_BK,56.2k 1%,,,,,Feedback resistor Buck (bot) - ajuste 5V,1,1,0402
+C_LDO_IN,1uF X5R,,,,,Entrada LDO,1,1,0402
+C_LDO_OUT,10uF X5R,,,,,Saida LDO,1,1,0805
+U_MCU,ESP32-WROOM-32E,ESP32-WROOM-32E,Module,C701342,Espressif,MCU dual-core 240MHz BLE/WiFi,2,1,Variante 4MB flash antena PCB
+U_USB,CP2102N,CP2102N-A02-GQFN28,QFN-28,,Silicon Labs,USB-UART bridge auto-prog,2,1,
+Q2,BC817,BC817,SOT-23,C22400355,NXP/ON Semi,NPN BJT auto-prog DTR,2,1,
+Q3,BC817,BC817,SOT-23,C916383,NXP/ON Semi,NPN BJT auto-prog RTS,2,1,
+C_MCU1,10uF X5R,,,,,Decoupling ESP32 bulk 1,2,1,0805
+C_MCU2,10uF X5R,,,,,Decoupling ESP32 bulk 2,2,1,0805
+C_MCU3,100nF X7R,,,,,Bypass ESP32 1,2,2,0402
+C_USB,100nF X7R,,,,,Bypass CP2102N,2,1,0402
+R_GPIO0,10k,,,,,Pull-up GPIO0 boot,2,1,0402
+R_GPIO12,10k,,,,,Pull-down GPIO12 strapping CRITICO,2,1,0402
+R_GPIO5,10k,,,,,Pull-up GPIO5 CAN_STB,2,1,0402
+R_LED,330R,,,,,Serie LED status GPIO2,2,1,0402
+U_CAN,TCAN1044V,TCAN1044VDRQ1,SOIC-8,C1852061,Texas Instruments,CAN transceiver ISO11898-2,3,1,Alternativa: SN65HVD230DR (3.3V nativo elimina divider)
+TVS2,PESD2CAN,PESD2CAN,SOT-363,C21713986,NXP,ESD/TVS CANH/CANL,3,1,
+FB1,600R@100MHz,BLM21PG601SN1,0805,,Murata,Ferrite EMI CANH,3,1,
+FB2,600R@100MHz,BLM21PG601SN1,0805,,Murata,Ferrite EMI CANL,3,1,
+CMC1,900R@100MHz,ACM2012H-900-2P-T,2012,C448605,TDK,Common mode choke CAN,3,1,
+Q4,BSS138,BSS138,SOT-23,C49435659,NXP/ON Semi,N-MOSFET chave terminacao CAN,3,1,
+R_TERM,120R 1%,,,,,Terminacao CAN,3,1,0402
+R_CAN_G,10k/20k,,,,,Divider CAN_RX 5V->3.3V,3,2,0402 (10k + 20k)
+U_KLINE,L9637D,L9637D,SO-8,C153038,STMicroelectronics,K-Line transceiver ISO9141 KWP2000,4,1,RISCO: part legado. Alternativa: MC33290 (NXP)
+U_LS1,74LVC1T45,74LVC1T45GW,SOT23-6,C478004,NXP,Level shifter 3.3V<->5V K-Line TX,4,1,
+TVS3,SMCJ24A,SMCJ24A,SMC,C42440493,Littelfuse,TVS 24V/1500W K-Line,4,1,
+R_K,100R,,,,,Serie K-Line,4,1,0402
+R_KPU,510R,,,,,Pull-up K-Line (selecao V_BATT ou 5V),4,1,0402
+U_GNSS,NEO-M9N,NEO-M9N,,C5119087,,u-blox GNSS 10Hz LGA,5,1,NAO DISPONIVEL NA LCSC - sourcing Mouser/DigiKey/Arrow
+FB_GNSS,600R@100MHz,BLM21PG601SN1,0805,,Murata,Ferrite isolamento VCC GNSS,5,1,
+L_FILT,10uH,SRR0604-100Y,SRR0604,,Bourns,Indutor shielded filtro pos-Buck GNSS,5,1,Se indisponivel buscar 10uH shielded equiv
+BAT1,0.1F/5.5V,CPX3225A,SMD,,Seiko/SII,Supercap backup GNSS RTC,5,1,Provavelmente nao na LCSC - buscar equiv supercap 0.1F/5.5V SMD
+J_ANT,U.FL 50R,,,,,Conector antena GNSS externa,5,1,SMD IPEX/U.FL 50 ohm
+C_GNSS,100nF X7R,,,,,Bypass GNSS VCC,5,2,0402
+J_SD,MicroSD,,,,,Slot MicroSD push-push SMD,6,1,Tipo horizontal push-push
+ESD1,PRTR5V0U2X,PRTR5V0U2X,SOT363,C53446675,NXP,ESD header expansao 1,6,1,
+ESD2,PRTR5V0U2X,PRTR5V0U2X,SOT363,C53446675,NXP,ESD header expansao 2,6,1,
+NTC1,10k B=3950,,,,,NTC termistor temp interna,6,1,0402 -40+125C
+R_I2C_SDA,4.7k,,,,,Pull-up I2C SDA GPIO21,6,1,0402
+R_I2C_SCL,4.7k,,,,,Pull-up I2C SCL GPIO22,6,1,0402

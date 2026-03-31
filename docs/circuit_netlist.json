@@ -1,0 +1,1146 @@
+{
+  "project": "V-Cortex Hardware",
+  "version": "1.1",
+  "date": "2026-03-24",
+  "description": "Netlist completa do hardware V-Cortex — ESP32 OBD2 telemetria automotiva",
+  "pcb": {
+    "layers": 4,
+    "size_mm": "65x45",
+    "max_component_height_mm": 10,
+    "stackup": ["Signal (TOP)", "GND solid", "Power planes (5V, 3V3)", "Signal + GND pour (BOTTOM)"]
+  },
+  "stages": [
+    {
+      "id": 1,
+      "name": "Power Supply",
+      "color": "#e74c3c",
+      "description": "Protecao V_BATT, Buck 5V, LDO 3.3V",
+      "components": [
+        {
+          "ref": "Q1",
+          "value": "P-MOSFET -40V",
+          "mpn": "PMV45EN2R-JSM",
+          "lcsc": "C53113978",
+          "manufacturer": "JSMSEMI",
+          "description": "Protecao inversao polaridade VDS=-40V ID=-3.5A",
+          "package": "SOT-23"
+        },
+        {
+          "ref": "F1",
+          "value": "Polyfuse 3A/30V",
+          "mpn": "1812L300MR",
+          "lcsc": "C127824",
+          "manufacturer": "Littelfuse",
+          "description": "PTC fuse sobrecorrente resetavel V_BATT",
+          "package": "1812"
+        },
+        {
+          "ref": "TVS1",
+          "value": "TVS 22V/1500W",
+          "mpn": "SMDJ22A",
+          "lcsc": "C4154722",
+          "manufacturer": "TWGMC",
+          "description": "TVS unidirecional 22V 1500W load dump V_BATT clamp 35.5V",
+          "package": "SMC"
+        },
+        {
+          "ref": "L1",
+          "value": "10uH/4A shielded",
+          "mpn": "CDRH6D28NP-100NC",
+          "lcsc": "C312982",
+          "manufacturer": "Sumida",
+          "description": "Indutor shielded filtro LC entrada Buck Isat~4A",
+          "package": "SMD6728"
+        },
+        {
+          "ref": "C1",
+          "value": "100uF/50V SMD",
+          "mpn": "EEEFK1H101P",
+          "lcsc": "C178548",
+          "manufacturer": "PANASONIC",
+          "description": "Polymer cap bulk entrada Buck 50V star-point GND",
+          "package": "SMD-D8xL10"
+        },
+        {
+          "ref": "U_BUCK",
+          "value": "LMR14020 2A",
+          "mpn": "LMR14020SDDAR",
+          "lcsc": "C187824",
+          "manufacturer": "Texas Instruments",
+          "description": "Buck converter 40V/2A saida 5V frequencia ~1.5MHz",
+          "package": "SOT-23-6"
+        },
+        {
+          "ref": "U_LDO",
+          "value": "AP2112K-3.3",
+          "mpn": "AP2112K-3.3TRG1",
+          "lcsc": "C51118",
+          "manufacturer": "DIODES",
+          "description": "LDO 3.3V/600mA dropout 250mV @ 600mA",
+          "package": "SOT-23-5"
+        },
+        {
+          "ref": "C_IN",
+          "value": "100nF/100V X7R",
+          "mpn": "CL05B104KO5NNNC",
+          "lcsc": "C1525",
+          "manufacturer": "Samsung",
+          "description": "Decoupling bypass entrada Buck alta frequencia",
+          "package": "0402"
+        },
+        {
+          "ref": "C_BOUT1",
+          "value": "22uF/10V X5R",
+          "mpn": "CL21A226MAQNNNE",
+          "lcsc": "C45783",
+          "manufacturer": "Samsung",
+          "description": "Saida Buck bulk 1 baixa impedancia baixa frequencia",
+          "package": "0805"
+        },
+        {
+          "ref": "C_BOUT2",
+          "value": "22uF/10V X5R",
+          "mpn": "CL21A226MAQNNNE",
+          "lcsc": "C45783",
+          "manufacturer": "Samsung",
+          "description": "Saida Buck bulk 2",
+          "package": "0805"
+        },
+        {
+          "ref": "C_BOUT3",
+          "value": "100nF X7R",
+          "mpn": "CL05B104KO5NNNC",
+          "lcsc": "C1525",
+          "manufacturer": "Samsung",
+          "description": "Saida Buck bypass media frequencia",
+          "package": "0402"
+        },
+        {
+          "ref": "C_BOOT",
+          "value": "100nF X7R",
+          "mpn": "CL05B104KO5NNNC",
+          "lcsc": "C1525",
+          "manufacturer": "Samsung",
+          "description": "Boot cap LMR14020 pino BOOT",
+          "package": "0402"
+        },
+        {
+          "ref": "R_BOOT_BK",
+          "value": "100k 1%",
+          "mpn": "RC0402FR-07100KL",
+          "lcsc": "C60491",
+          "manufacturer": "YAGEO",
+          "description": "Feedback resistor Buck top Rfb1 divisor tensao",
+          "package": "0402"
+        },
+        {
+          "ref": "R_BOT_BK",
+          "value": "56.2k 1%",
+          "mpn": "RC0402FR-0756K2L",
+          "lcsc": "C183355",
+          "manufacturer": "YAGEO",
+          "description": "Feedback resistor Buck bottom Rfb2 - define Vout=5V CRITICO",
+          "package": "0402"
+        },
+        {
+          "ref": "C_LDO_IN",
+          "value": "1uF X5R",
+          "mpn": "CL05A105KA5NQNC",
+          "lcsc": "C52923",
+          "manufacturer": "Samsung",
+          "description": "Entrada filtro LC LDO AP2112K",
+          "package": "0402"
+        },
+        {
+          "ref": "C_LDO_OUT",
+          "value": "10uF X5R",
+          "mpn": "CL21A106KOQNNNE",
+          "lcsc": "C1713",
+          "manufacturer": "Samsung",
+          "description": "Saida LDO AP2112K bulk",
+          "package": "0805"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "MCU Core",
+      "color": "#3498db",
+      "description": "ESP32-WROOM, CP2104 USB-UART, circuito auto-programacao",
+      "components": [
+        {
+          "ref": "U_MCU",
+          "value": "ESP32-WROOM-32E",
+          "mpn": "ESP32-WROOM-32E-N8",
+          "lcsc": "C701342",
+          "manufacturer": "ESPRESSIF",
+          "description": "MCU dual-core 240MHz BLE WiFi 8MB flash",
+          "package": "Module"
+        },
+        {
+          "ref": "U_USB",
+          "value": "CP2104 USB-UART",
+          "mpn": "CP2104-F03-GMR",
+          "lcsc": "C47742",
+          "manufacturer": "Silicon Labs",
+          "description": "USB-UART bridge auto-programacao DTR+RTS",
+          "package": "QFN-24-EP(4x4)"
+        },
+        {
+          "ref": "Q2",
+          "value": "BC817-40",
+          "mpn": "BC817-40",
+          "lcsc": "C609806",
+          "manufacturer": "Slkor",
+          "description": "NPN BJT auto-prog DTR -> GPIO0 hFE=250-600",
+          "package": "SOT-23"
+        },
+        {
+          "ref": "Q3",
+          "value": "BC817-40",
+          "mpn": "BC817-40",
+          "lcsc": "C609806",
+          "manufacturer": "Slkor",
+          "description": "NPN BJT auto-prog RTS -> EN Reset",
+          "package": "SOT-23"
+        },
+        {
+          "ref": "C_MCU1",
+          "value": "10uF X5R",
+          "mpn": "CL21A106KOQNNNE",
+          "lcsc": "C1713",
+          "manufacturer": "Samsung",
+          "description": "Decoupling ESP32 bulk 1 pico BLE TX 500mA",
+          "package": "0805"
+        },
+        {
+          "ref": "C_MCU2",
+          "value": "10uF X5R",
+          "mpn": "CL21A106KOQNNNE",
+          "lcsc": "C1713",
+          "manufacturer": "Samsung",
+          "description": "Decoupling ESP32 bulk 2 lado oposto modulo",
+          "package": "0805"
+        },
+        {
+          "ref": "C_MCU3",
+          "value": "100nF X7R",
+          "mpn": "CL05B104KO5NNNC",
+          "lcsc": "C1525",
+          "manufacturer": "Samsung",
+          "description": "Bypass ESP32 100nF x2 (<2mm do modulo)",
+          "package": "0402",
+          "qty": 2
+        },
+        {
+          "ref": "C_USB",
+          "value": "100nF X7R",
+          "mpn": "CL05B104KO5NNNC",
+          "lcsc": "C1525",
+          "manufacturer": "Samsung",
+          "description": "Bypass CP2104 decoupling VCC",
+          "package": "0402"
+        },
+        {
+          "ref": "R_GPIO0",
+          "value": "10k 1%",
+          "mpn": "RC0402FR-0710KL",
+          "lcsc": "C60490",
+          "manufacturer": "YAGEO",
+          "description": "Pull-up GPIO0 boot strapping 3.3V->GPIO0",
+          "package": "0402"
+        },
+        {
+          "ref": "R_GPIO12",
+          "value": "10k 1%",
+          "mpn": "RC0402FR-0710KL",
+          "lcsc": "C60490",
+          "manufacturer": "YAGEO",
+          "description": "Pull-DOWN GPIO12 strapping CRITICO flash 3.3V nao 1.8V",
+          "package": "0402"
+        },
+        {
+          "ref": "R_GPIO5",
+          "value": "10k 1%",
+          "mpn": "RC0402FR-0710KL",
+          "lcsc": "C60490",
+          "manufacturer": "YAGEO",
+          "description": "Pull-up GPIO5 CAN_STB HIGH=standby na energizacao",
+          "package": "0402"
+        },
+        {
+          "ref": "R_LED",
+          "value": "330R",
+          "mpn": "RC0402FR-07330RL",
+          "lcsc": "C105875",
+          "manufacturer": "YAGEO",
+          "description": "Resistor serie LED status GPIO2",
+          "package": "0402"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "CAN Bus",
+      "color": "#f39c12",
+      "description": "TCAN1044V transceiver, filtros EMI, terminacao controlada por software",
+      "components": [
+        {
+          "ref": "U_CAN",
+          "value": "TCAN1044V",
+          "mpn": "TCAN1044VDRQ1",
+          "lcsc": "C1852061",
+          "manufacturer": "Texas Instruments",
+          "description": "CAN transceiver ISO11898-2 automotivo VCC=5V V_IH=2.0V",
+          "package": "SOIC-8"
+        },
+        {
+          "ref": "TVS2",
+          "value": "PESD2CAN",
+          "mpn": "PESD2CAN",
+          "lcsc": "C21713986",
+          "manufacturer": "GOODWORK",
+          "description": "TVS diferencial CAN clamp 12V ESD +-8kV 8pF",
+          "package": "SOT-363"
+        },
+        {
+          "ref": "FB1",
+          "value": "600R@100MHz",
+          "mpn": "BLM21AG601SN1D",
+          "lcsc": "C85837",
+          "manufacturer": "muRata",
+          "description": "Ferrite bead EMI CANH 500mA",
+          "package": "0805"
+        },
+        {
+          "ref": "FB2",
+          "value": "600R@100MHz",
+          "mpn": "BLM21AG601SN1D",
+          "lcsc": "C85837",
+          "manufacturer": "muRata",
+          "description": "Ferrite bead EMI CANL 500mA",
+          "package": "0805"
+        },
+        {
+          "ref": "CMC1",
+          "value": "900R@100MHz",
+          "mpn": "DLW21SN900SQ2L",
+          "lcsc": "C97856",
+          "manufacturer": "muRata",
+          "description": "Common mode choke CAN -20dB radiacao EMI",
+          "package": "SMD-4P-2x1.25"
+        },
+        {
+          "ref": "Q4",
+          "value": "BSS138",
+          "mpn": "BSS138",
+          "lcsc": "C49435659",
+          "manufacturer": "Huixin",
+          "description": "N-MOSFET chave terminacao CAN VGSth=0.8-1.5V compat 3.3V",
+          "package": "SOT-23"
+        },
+        {
+          "ref": "R_TERM",
+          "value": "120R 1%",
+          "mpn": "RC0402FR-07120RL",
+          "lcsc": "C114758",
+          "manufacturer": "YAGEO",
+          "description": "Terminacao CAN 120R ISO11898-2",
+          "package": "0402"
+        },
+        {
+          "ref": "R_CAN_G1",
+          "value": "10k 1%",
+          "mpn": "RC0402FR-0710KL",
+          "lcsc": "C60490",
+          "manufacturer": "YAGEO",
+          "description": "Divisor CAN_RX 5V->3.3V top resistor",
+          "package": "0402"
+        },
+        {
+          "ref": "R_CAN_G2",
+          "value": "20k 1%",
+          "mpn": "RC0402FR-0720KL",
+          "lcsc": "C93942",
+          "manufacturer": "YAGEO",
+          "description": "Divisor CAN_RX 5V->3.3V bottom resistor para GND",
+          "package": "0402"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "K-Line",
+      "color": "#9b59b6",
+      "description": "L9637D transceiver ISO9141/KWP2000, level shifter, protecao TVS",
+      "components": [
+        {
+          "ref": "U_KLINE",
+          "value": "L9637D",
+          "mpn": "L9637D",
+          "lcsc": "C153038",
+          "manufacturer": "STMicroelectronics",
+          "description": "K-Line transceiver ISO9141 KWP2000 VCC=5V",
+          "package": "SO-8"
+        },
+        {
+          "ref": "U_LS1",
+          "value": "74LVC1T45",
+          "mpn": "74LVC1T45GW",
+          "lcsc": "C478004",
+          "manufacturer": "Nexperia",
+          "description": "Level shifter bidirecional 3.3V<->5V K-Line TX",
+          "package": "SOT23-6"
+        },
+        {
+          "ref": "TVS3",
+          "value": "SMCJ24A",
+          "mpn": "SMCJ24A",
+          "lcsc": "C42440493",
+          "manufacturer": "TECH PUBLIC",
+          "description": "TVS 24V/1500W K-Line protecao transientes ignição",
+          "package": "SMC"
+        },
+        {
+          "ref": "R_K",
+          "value": "100R",
+          "mpn": "RC0402FR-07100RL",
+          "lcsc": "C106232",
+          "manufacturer": "YAGEO",
+          "description": "Resistor serie K-Line limita corrente transiente",
+          "package": "0402"
+        },
+        {
+          "ref": "R_KPU",
+          "value": "510R",
+          "mpn": "RC0402FR-07510RL",
+          "lcsc": "C276273",
+          "manufacturer": "YAGEO",
+          "description": "Pull-up K-Line 510R para 5V modo ISO9141",
+          "package": "0402"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "GNSS",
+      "color": "#27ae60",
+      "description": "NEO-M9N 10Hz multi-constelacao, antena U.FL, supercap backup",
+      "components": [
+        {
+          "ref": "U_GNSS",
+          "value": "NEO-M9N",
+          "mpn": "NEO-M9N-00B",
+          "lcsc": "C5119087",
+          "manufacturer": "U-BLOX",
+          "description": "GNSS multi-constelacao 10Hz UART 115200 UBX-NAV-PVT",
+          "package": "LGA"
+        },
+        {
+          "ref": "FB_GNSS",
+          "value": "600R@100MHz",
+          "mpn": "BLM21AG601SN1D",
+          "lcsc": "C85837",
+          "manufacturer": "muRata",
+          "description": "Ferrite isolamento VCC GNSS do plano 3.3V",
+          "package": "0805"
+        },
+        {
+          "ref": "L_FILT",
+          "value": "10uH shielded",
+          "mpn": "SPM5015T-100M-LR",
+          "lcsc": "C5372747",
+          "manufacturer": "TDK",
+          "description": "Indutor shielded filtro pos-Buck antes LDO ~40dB@1.5MHz",
+          "package": "SMD5415"
+        },
+        {
+          "ref": "BAT1",
+          "value": "0.1F/5.5V",
+          "mpn": "ASR-S-7-0.1F",
+          "lcsc": "C6075508",
+          "manufacturer": "Yezhan",
+          "description": "Supercap 0.1F/5.5V backup GNSS hot-start V_BCKP",
+          "package": "SMD5930"
+        },
+        {
+          "ref": "J_ANT",
+          "value": "U.FL 50R",
+          "mpn": "",
+          "lcsc": "C88374",
+          "manufacturer": "",
+          "description": "Conector U.FL antena GNSS externa 50 ohm trilha <10mm",
+          "package": "U.FL SMD"
+        },
+        {
+          "ref": "C_GNSS",
+          "value": "100nF X7R",
+          "mpn": "CL05B104KO5NNNC",
+          "lcsc": "C1525",
+          "manufacturer": "Samsung",
+          "description": "Bypass GNSS VCC x2 <0.5mm do pino VCC",
+          "package": "0402",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Storage and Expansion",
+      "color": "#1abc9c",
+      "description": "MicroSD SPI, protecao ESD headers, NTC termistor, I2C pull-ups",
+      "components": [
+        {
+          "ref": "J_SD",
+          "value": "MicroSD push-push",
+          "mpn": "",
+          "lcsc": "C393941",
+          "manufacturer": "",
+          "description": "Slot MicroSD horizontal push-push SMD SPI",
+          "package": "SMD"
+        },
+        {
+          "ref": "ESD1",
+          "value": "PRTR5V0U2X",
+          "mpn": "PRTR5V0U2X",
+          "lcsc": "C53446675",
+          "manufacturer": "R+O",
+          "description": "ESD 2-canal 5.5V 0.5pF header expansao GPIO1",
+          "package": "SOT363"
+        },
+        {
+          "ref": "ESD2",
+          "value": "PRTR5V0U2X",
+          "mpn": "PRTR5V0U2X",
+          "lcsc": "C53446675",
+          "manufacturer": "R+O",
+          "description": "ESD 2-canal 5.5V 0.5pF header expansao GPIO2",
+          "package": "SOT363"
+        },
+        {
+          "ref": "NTC1",
+          "value": "10k B=3950",
+          "mpn": "NCP15WF104F03RC",
+          "lcsc": "C77130",
+          "manufacturer": "muRata",
+          "description": "NTC termistor temp interna caixa OBD2 -40+125C",
+          "package": "0402"
+        },
+        {
+          "ref": "R_I2C_SDA",
+          "value": "4.7k",
+          "mpn": "RC0402FR-074K7L",
+          "lcsc": "C105871",
+          "manufacturer": "YAGEO",
+          "description": "Pull-up I2C SDA GPIO21 para 3.3V",
+          "package": "0402"
+        },
+        {
+          "ref": "R_I2C_SCL",
+          "value": "4.7k",
+          "mpn": "RC0402FR-074K7L",
+          "lcsc": "C105871",
+          "manufacturer": "YAGEO",
+          "description": "Pull-up I2C SCL GPIO22 para 3.3V",
+          "package": "0402"
+        }
+      ]
+    }
+  ],
+  "nets": [
+    {
+      "name": "V_BATT",
+      "type": "power",
+      "color": "#e74c3c",
+      "voltage": "9-16V",
+      "description": "Entrada bateria automotiva ISO7637-2",
+      "connections": [
+        {"from": "V_BATT_IN", "to": "Q1", "pin_from": "input", "pin_to": "source", "label": "9-16V raw"},
+        {"from": "V_BATT_IN", "to": "R_KPU", "pin_from": "input", "pin_to": "top", "label": "Pull-up K-Line V_BATT"},
+        {"from": "V_BATT_IN", "to": "R_VBAT1_TOP", "pin_from": "input", "pin_to": "top", "label": "Monitor divisor 100k"}
+      ]
+    },
+    {
+      "name": "NET_Q1_OUT",
+      "type": "power",
+      "color": "#c0392b",
+      "voltage": "9-16V protected",
+      "description": "Post MOSFET inversao polaridade",
+      "connections": [
+        {"from": "Q1", "to": "F1", "pin_from": "drain", "pin_to": "in", "label": "9-16V protegido"}
+      ]
+    },
+    {
+      "name": "NET_F1_OUT",
+      "type": "power",
+      "color": "#e67e22",
+      "voltage": "9-16V fused",
+      "description": "Post polyfuse - alimenta TVS, LC filter e Buck",
+      "connections": [
+        {"from": "F1", "to": "TVS1", "pin_from": "out", "pin_to": "anode", "label": "TVS clamp 22V"},
+        {"from": "F1", "to": "L1", "pin_from": "out", "pin_to": "in", "label": "Filtro LC indutor"},
+        {"from": "F1", "to": "C1", "pin_from": "out", "pin_to": "positive", "label": "Bulk cap 100uF/50V"},
+        {"from": "F1", "to": "C_IN", "pin_from": "out", "pin_to": "positive", "label": "Bypass 100nF"},
+        {"from": "L1", "to": "U_BUCK", "pin_from": "out", "pin_to": "VIN", "label": "Buck input via L1"}
+      ]
+    },
+    {
+      "name": "NET_5V",
+      "type": "power",
+      "color": "#e67e22",
+      "voltage": "5.0V",
+      "description": "Saida Buck LMR14020 - alimenta perifericos 5V e LDO",
+      "connections": [
+        {"from": "U_BUCK", "to": "C_BOUT1", "pin_from": "out", "pin_to": "positive", "label": "5V bulk 22uF"},
+        {"from": "U_BUCK", "to": "C_BOUT2", "pin_from": "out", "pin_to": "positive", "label": "5V bulk 22uF"},
+        {"from": "U_BUCK", "to": "C_BOUT3", "pin_from": "out", "pin_to": "positive", "label": "5V bypass 100nF"},
+        {"from": "U_BUCK", "to": "L_FILT", "pin_from": "out", "pin_to": "in", "label": "5V -> filtro LC -> LDO"},
+        {"from": "U_BUCK", "to": "U_CAN", "pin_from": "out", "pin_to": "VCC", "label": "5V CAN transceiver"},
+        {"from": "U_BUCK", "to": "U_USB", "pin_from": "out", "pin_to": "VCC", "label": "5V CP2104"},
+        {"from": "U_BUCK", "to": "U_KLINE", "pin_from": "out", "pin_to": "VCC", "label": "5V L9637D"},
+        {"from": "U_BUCK", "to": "U_LS1", "pin_from": "out", "pin_to": "VCCB", "label": "5V level shifter B-side"},
+        {"from": "U_BUCK", "to": "R_KPU", "pin_from": "out", "pin_to": "top", "label": "5V pull-up K-Line modo bancada"},
+        {"from": "U_BUCK", "to": "R_BOOT_BK", "pin_from": "out", "pin_to": "top", "label": "5V FB divisor top"}
+      ]
+    },
+    {
+      "name": "NET_5V_FILT",
+      "type": "power",
+      "color": "#d35400",
+      "voltage": "5.0V filtered",
+      "description": "5V filtrado pos L_FILT - entrada LDO mais limpa",
+      "connections": [
+        {"from": "L_FILT", "to": "C_LDO_IN", "pin_from": "out", "pin_to": "positive", "label": "5V filtrado 1uF"},
+        {"from": "L_FILT", "to": "U_LDO", "pin_from": "out", "pin_to": "in", "label": "5V filtrado -> LDO"}
+      ]
+    },
+    {
+      "name": "NET_3V3",
+      "type": "power",
+      "color": "#2980b9",
+      "voltage": "3.3V",
+      "description": "Saida LDO AP2112K-3.3 - alimenta ESP32 e logica 3.3V",
+      "connections": [
+        {"from": "U_LDO", "to": "C_LDO_OUT", "pin_from": "out", "pin_to": "positive", "label": "3.3V bulk 10uF"},
+        {"from": "U_LDO", "to": "C_MCU1", "pin_from": "out", "pin_to": "positive", "label": "3.3V bulk ESP32"},
+        {"from": "U_LDO", "to": "C_MCU2", "pin_from": "out", "pin_to": "positive", "label": "3.3V bulk ESP32"},
+        {"from": "U_LDO", "to": "C_MCU3", "pin_from": "out", "pin_to": "positive", "label": "3.3V bypass 100nF x2"},
+        {"from": "U_LDO", "to": "U_MCU", "pin_from": "out", "pin_to": "VCC", "label": "3.3V ESP32"},
+        {"from": "U_LDO", "to": "C_USB", "pin_from": "out", "pin_to": "positive", "label": "3.3V bypass CP2104"},
+        {"from": "U_LDO", "to": "R_GPIO0", "pin_from": "out", "pin_to": "top", "label": "3.3V pull-up GPIO0"},
+        {"from": "U_LDO", "to": "R_GPIO5", "pin_from": "out", "pin_to": "top", "label": "3.3V pull-up GPIO5"},
+        {"from": "U_LDO", "to": "R_LED", "pin_from": "out", "pin_to": "top", "label": "3.3V -> LED"},
+        {"from": "U_LDO", "to": "R_I2C_SDA", "pin_from": "out", "pin_to": "top", "label": "3.3V pull-up SDA"},
+        {"from": "U_LDO", "to": "R_I2C_SCL", "pin_from": "out", "pin_to": "top", "label": "3.3V pull-up SCL"},
+        {"from": "U_LDO", "to": "FB_GNSS", "pin_from": "out", "pin_to": "in", "label": "3.3V -> ferrite GNSS"},
+        {"from": "U_LDO", "to": "U_LS1", "pin_from": "out", "pin_to": "VCCA", "label": "3.3V level shifter A-side"},
+        {"from": "U_LDO", "to": "NTC1_RREF", "pin_from": "out", "pin_to": "top", "label": "3.3V ref divisor NTC"},
+        {"from": "U_LDO", "to": "R_VBAT1", "pin_from": "out", "pin_to": "NOT_CONNECTED", "label": "NTC ref resistor 3.3V"}
+      ]
+    },
+    {
+      "name": "NET_3V3_GNSS",
+      "type": "power",
+      "color": "#27ae60",
+      "voltage": "3.3V clean",
+      "description": "3.3V isolado para GNSS via ferrite bead",
+      "connections": [
+        {"from": "FB_GNSS", "to": "C_GNSS", "pin_from": "out", "pin_to": "positive", "label": "3.3V GNSS bypass x2"},
+        {"from": "FB_GNSS", "to": "U_GNSS", "pin_from": "out", "pin_to": "VCC", "label": "3.3V GNSS VCC"}
+      ]
+    },
+    {
+      "name": "NET_BUCK_FB",
+      "type": "signal",
+      "color": "#7f8c8d",
+      "description": "Divisor feedback Buck - define Vout=5V",
+      "connections": [
+        {"from": "U_BUCK", "to": "R_BOOT_BK", "pin_from": "FB", "pin_to": "bottom", "label": "FB node"},
+        {"from": "R_BOOT_BK", "to": "R_BOT_BK", "pin_from": "bottom", "pin_to": "top", "label": "FB junction"},
+        {"from": "R_BOT_BK", "to": "GND", "pin_from": "bottom", "pin_to": "GND", "label": "GND"}
+      ]
+    },
+    {
+      "name": "NET_BUCK_BOOT",
+      "type": "signal",
+      "color": "#7f8c8d",
+      "description": "Boot capacitor LMR14020",
+      "connections": [
+        {"from": "U_BUCK", "to": "C_BOOT", "pin_from": "BOOT", "pin_to": "positive", "label": "Boot cap 100nF"}
+      ]
+    },
+    {
+      "name": "NET_AUTO_PROG_DTR",
+      "type": "signal",
+      "color": "#8e44ad",
+      "description": "Auto-programacao CP2104 DTR -> Q2 -> GPIO0",
+      "connections": [
+        {"from": "U_USB", "to": "Q2", "pin_from": "DTR", "pin_to": "base_via_10k", "label": "DTR via 10k base Q2"},
+        {"from": "Q2", "to": "U_MCU", "pin_from": "collector_via_100nF", "pin_to": "GPIO0", "label": "Pulse 100nF -> GPIO0"},
+        {"from": "R_GPIO0", "to": "U_MCU", "pin_from": "bottom", "pin_to": "GPIO0", "label": "Pull-up 3.3V GPIO0"}
+      ]
+    },
+    {
+      "name": "NET_AUTO_PROG_RTS",
+      "type": "signal",
+      "color": "#8e44ad",
+      "description": "Auto-programacao CP2104 RTS -> Q3 -> EN Reset",
+      "connections": [
+        {"from": "U_USB", "to": "Q3", "pin_from": "RTS", "pin_to": "base_via_10k", "label": "RTS via 10k base Q3"},
+        {"from": "Q3", "to": "U_MCU", "pin_from": "collector_via_100nF", "pin_to": "EN", "label": "Pulse 100nF -> EN Reset"}
+      ]
+    },
+    {
+      "name": "NET_UART0",
+      "type": "signal",
+      "color": "#2ecc71",
+      "description": "UART0 programacao debug ESP32 <-> CP2104",
+      "connections": [
+        {"from": "U_USB", "to": "U_MCU", "pin_from": "TXD", "pin_to": "RXD0", "label": "CP2104_TX -> ESP32_RX"},
+        {"from": "U_MCU", "to": "U_USB", "pin_from": "TXD0", "pin_to": "RXD", "label": "ESP32_TX -> CP2104_RX"}
+      ]
+    },
+    {
+      "name": "NET_GPIO12_PULLDOWN",
+      "type": "signal",
+      "color": "#e74c3c",
+      "description": "GPIO12 pull-down CRITICO strapping flash 3.3V",
+      "connections": [
+        {"from": "R_GPIO12", "to": "U_MCU", "pin_from": "bottom_to_GND", "pin_to": "GPIO12", "label": "CRITICO: pull-DOWN GND flash 3.3V"},
+        {"from": "R_GPIO12", "to": "GND", "pin_from": "bottom", "pin_to": "GND", "label": "GND"}
+      ]
+    },
+    {
+      "name": "NET_LED",
+      "type": "signal",
+      "color": "#f1c40f",
+      "description": "LED status GPIO2",
+      "connections": [
+        {"from": "U_MCU", "to": "R_LED", "pin_from": "GPIO2", "pin_to": "bottom", "label": "GPIO2 -> 330R -> LED"},
+        {"from": "R_LED", "to": "LED1", "pin_from": "top", "pin_to": "anode", "label": "3.3V -> R_LED -> LED_anode"}
+      ]
+    },
+    {
+      "name": "NET_CAN_BUS",
+      "type": "signal",
+      "color": "#f39c12",
+      "description": "Barramento CAN diferencial externo -> filtros -> transceiver",
+      "connections": [
+        {"from": "CANH_EXT", "to": "CMC1", "pin_from": "connector", "pin_to": "pin1", "label": "CANH externo"},
+        {"from": "CANL_EXT", "to": "CMC1", "pin_from": "connector", "pin_to": "pin2", "label": "CANL externo"},
+        {"from": "CMC1", "to": "FB1", "pin_from": "pin3", "pin_to": "in", "label": "CANH pos-CMC"},
+        {"from": "CMC1", "to": "FB2", "pin_from": "pin4", "pin_to": "in", "label": "CANL pos-CMC"},
+        {"from": "FB1", "to": "U_CAN", "pin_from": "out", "pin_to": "CANH", "label": "CANH_IC"},
+        {"from": "FB2", "to": "U_CAN", "pin_from": "out", "pin_to": "CANL", "label": "CANL_IC"},
+        {"from": "TVS2", "to": "FB1", "pin_from": "ch1", "pin_to": "out", "label": "TVS CANH clamp 12V"},
+        {"from": "TVS2", "to": "FB2", "pin_from": "ch2", "pin_to": "out", "label": "TVS CANL clamp 12V"}
+      ]
+    },
+    {
+      "name": "NET_CAN_TX",
+      "type": "signal",
+      "color": "#e67e22",
+      "description": "CAN TX direto ESP32->TCAN1044V sem level shifter V_IH=2.0V",
+      "connections": [
+        {"from": "U_MCU", "to": "U_CAN", "pin_from": "GPIO18", "pin_to": "TXD", "label": "CAN_TX 3.3V direto V_IH_min=2.0V"}
+      ]
+    },
+    {
+      "name": "NET_CAN_RX",
+      "type": "signal",
+      "color": "#e67e22",
+      "description": "CAN RX TCAN1044V->ESP32 via divisor 10k/20k 5V->3.3V",
+      "connections": [
+        {"from": "U_CAN", "to": "R_CAN_G1", "pin_from": "RXD", "pin_to": "top", "label": "CAN_RX 5V output"},
+        {"from": "R_CAN_G1", "to": "R_CAN_G2", "pin_from": "bottom", "pin_to": "top", "label": "Divisor junction 3.33V"},
+        {"from": "R_CAN_G1", "to": "U_MCU", "pin_from": "bottom", "pin_to": "GPIO19", "label": "GPIO19 3.33V"},
+        {"from": "R_CAN_G2", "to": "GND", "pin_from": "bottom", "pin_to": "GND", "label": "GND"}
+      ]
+    },
+    {
+      "name": "NET_CAN_STB",
+      "type": "signal",
+      "color": "#7f8c8d",
+      "description": "CAN standby control GPIO5 pull-up HIGH=standby boot",
+      "connections": [
+        {"from": "U_MCU", "to": "U_CAN", "pin_from": "GPIO5", "pin_to": "STB", "label": "CAN_STB"},
+        {"from": "R_GPIO5", "to": "U_MCU", "pin_from": "bottom", "pin_to": "GPIO5", "label": "Pull-up 10k 3.3V GPIO5"}
+      ]
+    },
+    {
+      "name": "NET_CAN_TERM",
+      "type": "signal",
+      "color": "#d35400",
+      "description": "Terminacao CAN controlada por software via BSS138",
+      "connections": [
+        {"from": "U_MCU", "to": "Q4", "pin_from": "GPIO25", "pin_to": "gate_via_10k", "label": "CAN_TERM_EN via 10k"},
+        {"from": "Q4", "to": "R_TERM", "pin_from": "drain", "pin_to": "one_end", "label": "MOSFET chave terminacao"},
+        {"from": "R_TERM", "to": "U_CAN", "pin_from": "other_end_CANH", "pin_to": "CANH_internal", "label": "120R terminacao CANH"},
+        {"from": "Q4", "to": "U_CAN", "pin_from": "source_CANL", "pin_to": "CANL_internal", "label": "120R terminacao CANL"}
+      ]
+    },
+    {
+      "name": "NET_KLINE",
+      "type": "signal",
+      "color": "#9b59b6",
+      "description": "K-Line ISO9141 externo com protecao TVS e R serie",
+      "connections": [
+        {"from": "K_LINE_EXT", "to": "R_K", "pin_from": "connector", "pin_to": "in", "label": "K_LINE externo"},
+        {"from": "R_K", "to": "TVS3", "pin_from": "out", "pin_to": "anode", "label": "TVS 24V clamp"},
+        {"from": "R_K", "to": "U_KLINE", "pin_from": "out", "pin_to": "K", "label": "K_LINE_IC pos-TVS"},
+        {"from": "R_KPU", "to": "R_K", "pin_from": "bottom", "pin_to": "out", "label": "Pull-up 510R"}
+      ]
+    },
+    {
+      "name": "NET_KLINE_TX",
+      "type": "signal",
+      "color": "#8e44ad",
+      "description": "K-Line TX ESP32 3.3V -> level shifter 5V -> L9637D",
+      "connections": [
+        {"from": "U_MCU", "to": "U_LS1", "pin_from": "GPIO15", "pin_to": "A_3V3", "label": "KLINE_TX 3.3V"},
+        {"from": "U_LS1", "to": "U_KLINE", "pin_from": "B_5V", "pin_to": "TX", "label": "KLINE_TX 5V"}
+      ]
+    },
+    {
+      "name": "NET_KLINE_RX",
+      "type": "signal",
+      "color": "#8e44ad",
+      "description": "K-Line RX L9637D -> divisor 10k/20k -> ESP32 GPIO33",
+      "connections": [
+        {"from": "U_KLINE", "to": "R_CAN_G1_KLINE", "pin_from": "RX", "pin_to": "top_10k", "label": "KLINE_RX 5V via divisor"},
+        {"from": "U_KLINE", "to": "U_MCU", "pin_from": "RX_via_divider", "pin_to": "GPIO33", "label": "GPIO33 3.33V KLINE_RX"}
+      ]
+    },
+    {
+      "name": "NET_GNSS_UART",
+      "type": "signal",
+      "color": "#27ae60",
+      "description": "UART2 GNSS 115200 baud 8N1 ESP32 <-> NEO-M9N",
+      "connections": [
+        {"from": "U_GNSS", "to": "U_MCU", "pin_from": "TXD", "pin_to": "GPIO16", "label": "GNSS_TX -> UART2_RX 115200"},
+        {"from": "U_MCU", "to": "U_GNSS", "pin_from": "GPIO17", "pin_to": "RXD", "label": "UART2_TX -> GNSS_RX 115200"}
+      ]
+    },
+    {
+      "name": "NET_GNSS_PPS",
+      "type": "signal",
+      "color": "#2ecc71",
+      "description": "PPS 1Hz/10Hz sinal 3.3V entrada apenas GPIO35",
+      "connections": [
+        {"from": "U_GNSS", "to": "R_PPS", "pin_from": "PPS", "pin_to": "in", "label": "PPS 3.3V 100R serie ESD"},
+        {"from": "R_PPS", "to": "U_MCU", "pin_from": "out", "pin_to": "GPIO35", "label": "GPIO35 input only PPS"}
+      ]
+    },
+    {
+      "name": "NET_GNSS_BACKUP",
+      "type": "power",
+      "color": "#1abc9c",
+      "description": "V_BCKP supercap GNSS hot-start",
+      "connections": [
+        {"from": "U_GNSS", "to": "BAT1", "pin_from": "V_BCKP", "pin_to": "positive", "label": "Supercap 0.1F backup GNSS"}
+      ]
+    },
+    {
+      "name": "NET_GNSS_ANT",
+      "type": "rf",
+      "color": "#16a085",
+      "description": "Trilha RF 50 ohm <10mm para conector U.FL antena ativa",
+      "connections": [
+        {"from": "J_ANT", "to": "U_GNSS", "pin_from": "center", "pin_to": "RF_IN", "label": "50ohm microstrip <10mm"}
+      ]
+    },
+    {
+      "name": "NET_SD_SPI",
+      "type": "signal",
+      "color": "#3498db",
+      "description": "SPI MicroSD barramento compartilhado com header expansao",
+      "connections": [
+        {"from": "U_MCU", "to": "J_SD", "pin_from": "GPIO4", "pin_to": "CS", "label": "SD_CS chip select"},
+        {"from": "U_MCU", "to": "J_SD", "pin_from": "GPIO13", "pin_to": "MOSI", "label": "SD_MOSI"},
+        {"from": "U_MCU", "to": "J_SD", "pin_from": "GPIO14", "pin_to": "CLK", "label": "SD_CLK"},
+        {"from": "J_SD", "to": "U_MCU", "pin_from": "MISO", "pin_to": "GPIO23", "label": "SD_MISO"}
+      ]
+    },
+    {
+      "name": "NET_I2C",
+      "type": "signal",
+      "color": "#2980b9",
+      "description": "I2C expansao GPIO21/22 com pull-ups 4.7k",
+      "connections": [
+        {"from": "U_MCU", "to": "R_I2C_SDA", "pin_from": "GPIO21", "pin_to": "bottom", "label": "I2C_SDA"},
+        {"from": "R_I2C_SDA", "to": "J_I2C", "pin_from": "bottom", "pin_to": "SDA_pin3", "label": "SDA header"},
+        {"from": "U_MCU", "to": "R_I2C_SCL", "pin_from": "GPIO22", "pin_to": "bottom", "label": "I2C_SCL"},
+        {"from": "R_I2C_SCL", "to": "J_I2C", "pin_from": "bottom", "pin_to": "SCL_pin4", "label": "SCL header"}
+      ]
+    },
+    {
+      "name": "NET_NTC_ADC",
+      "type": "signal",
+      "color": "#e74c3c",
+      "description": "Divisor NTC termistor monitor temperatura caixa GPIO36",
+      "connections": [
+        {"from": "U_LDO", "to": "NTC1", "pin_from": "out_3V3", "pin_to": "R_ref_top_10k", "label": "3.3V -> R_ref 10k -> NTC1"},
+        {"from": "NTC1", "to": "U_MCU", "pin_from": "junction", "pin_to": "GPIO36", "label": "GPIO36 ADC NTC temperatura"},
+        {"from": "NTC1", "to": "GND", "pin_from": "bottom", "pin_to": "GND", "label": "NTC -> GND"}
+      ]
+    },
+    {
+      "name": "NET_VBATT_MON",
+      "type": "signal",
+      "color": "#e74c3c",
+      "description": "Monitor V_BATT divisor 100k/22k GPIO34 ADC input only",
+      "connections": [
+        {"from": "V_BATT_IN", "to": "R_VBAT1", "pin_from": "raw", "pin_to": "top_100k", "label": "V_BATT 9-16V"},
+        {"from": "R_VBAT1", "to": "U_MCU", "pin_from": "junction_22k", "pin_to": "GPIO34", "label": "GPIO34 ADC Vbatt/5.55"},
+        {"from": "R_VBAT2", "to": "GND", "pin_from": "bottom", "pin_to": "GND", "label": "22k -> GND"}
+      ]
+    },
+    {
+      "name": "NET_EXP_GPIO",
+      "type": "signal",
+      "color": "#1abc9c",
+      "description": "Header expansao GPIO com protecao ESD PRTR5V0U2X",
+      "connections": [
+        {"from": "U_MCU", "to": "ESD1", "pin_from": "GPIO26", "pin_to": "ch1_in", "label": "EXP_GPIO_1 ESD"},
+        {"from": "U_MCU", "to": "ESD1", "pin_from": "GPIO27", "pin_to": "ch2_in", "label": "EXP_GPIO_2 ESD"},
+        {"from": "ESD1", "to": "J_GPIO", "pin_from": "ch1_out", "pin_to": "pin3_GPIO26", "label": "GPIO26 header"},
+        {"from": "ESD1", "to": "J_GPIO", "pin_from": "ch2_out", "pin_to": "pin4_GPIO27", "label": "GPIO27 header"},
+        {"from": "U_MCU", "to": "ESD2", "pin_from": "GPIO32", "pin_to": "ch1_in", "label": "EXP_GPIO_3 ESD"},
+        {"from": "U_MCU", "to": "ESD2", "pin_from": "GPIO36", "pin_to": "ch2_in", "label": "ADC_EXP_1 ESD"},
+        {"from": "ESD2", "to": "J_GPIO", "pin_from": "ch1_out", "pin_to": "pin5_GPIO32", "label": "GPIO32 header"},
+        {"from": "ESD2", "to": "J_GPIO", "pin_from": "ch2_out", "pin_to": "pin6_GPIO36", "label": "GPIO36/VP ADC header"}
+      ]
+    },
+    {
+      "name": "GND",
+      "type": "power",
+      "color": "#2c3e50",
+      "voltage": "0V",
+      "description": "Ground plane - star topology ponto C1 bulk",
+      "connections": [
+        {"from": "C1", "to": "GND_STAR", "pin_from": "negative", "pin_to": "star_point", "label": "Star ground 100uF bulk"},
+        {"from": "TVS1", "to": "GND", "pin_from": "cathode", "pin_to": "GND", "label": "TVS1 GND"},
+        {"from": "C_IN", "to": "GND", "pin_from": "negative", "pin_to": "GND", "label": "Bypass GND"},
+        {"from": "U_BUCK", "to": "GND", "pin_from": "GND", "pin_to": "GND", "label": "Buck GND"},
+        {"from": "C_BOUT1", "to": "GND", "pin_from": "negative", "pin_to": "GND", "label": "Out cap GND"},
+        {"from": "C_BOUT2", "to": "GND", "pin_from": "negative", "pin_to": "GND", "label": "Out cap GND"},
+        {"from": "C_BOUT3", "to": "GND", "pin_from": "negative", "pin_to": "GND", "label": "Out bypass GND"},
+        {"from": "C_BOOT", "to": "GND", "pin_from": "negative", "pin_to": "GND", "label": "Boot cap GND"},
+        {"from": "R_BOT_BK", "to": "GND", "pin_from": "bottom", "pin_to": "GND", "label": "FB divider GND"},
+        {"from": "U_LDO", "to": "GND", "pin_from": "GND", "pin_to": "GND", "label": "LDO GND"},
+        {"from": "C_LDO_IN", "to": "GND", "pin_from": "negative", "pin_to": "GND", "label": "LDO in cap GND"},
+        {"from": "C_LDO_OUT", "to": "GND", "pin_from": "negative", "pin_to": "GND", "label": "LDO out cap GND"},
+        {"from": "U_MCU", "to": "GND", "pin_from": "GND", "pin_to": "GND_DIG", "label": "ESP32 GND"},
+        {"from": "U_USB", "to": "GND", "pin_from": "GND", "pin_to": "GND_DIG", "label": "CP2104 GND"},
+        {"from": "Q2", "to": "GND", "pin_from": "emitter", "pin_to": "GND", "label": "Q2 emitter GND"},
+        {"from": "Q3", "to": "GND", "pin_from": "emitter", "pin_to": "GND", "label": "Q3 emitter GND"},
+        {"from": "R_GPIO12", "to": "GND", "pin_from": "bottom", "pin_to": "GND", "label": "GPIO12 pull-down GND"},
+        {"from": "U_CAN", "to": "GND", "pin_from": "GND", "pin_to": "GND_DIG", "label": "CAN GND"},
+        {"from": "TVS2", "to": "GND", "pin_from": "GND", "pin_to": "GND", "label": "TVS2 CAN GND"},
+        {"from": "Q4", "to": "GND", "pin_from": "source", "pin_to": "GND", "label": "CAN TERM MOSFET GND"},
+        {"from": "R_CAN_G2", "to": "GND", "pin_from": "bottom", "pin_to": "GND", "label": "CAN RX divider GND"},
+        {"from": "U_KLINE", "to": "GND", "pin_from": "GND", "pin_to": "GND_DIG", "label": "K-Line GND"},
+        {"from": "TVS3", "to": "GND", "pin_from": "cathode", "pin_to": "GND", "label": "TVS3 K-Line GND"},
+        {"from": "U_GNSS", "to": "GND", "pin_from": "GND", "pin_to": "GND_ANA", "label": "GNSS GND analógico"},
+        {"from": "BAT1", "to": "GND", "pin_from": "negative", "pin_to": "GND", "label": "Supercap GND"},
+        {"from": "C_GNSS", "to": "GND", "pin_from": "negative", "pin_to": "GND_ANA", "label": "GNSS bypass GND"},
+        {"from": "J_SD", "to": "GND", "pin_from": "GND", "pin_to": "GND", "label": "MicroSD GND"},
+        {"from": "NTC1", "to": "GND", "pin_from": "bottom", "pin_to": "GND", "label": "NTC divider GND"}
+      ]
+    }
+  ],
+  "power_rails": ["V_BATT", "NET_Q1_OUT", "NET_F1_OUT", "NET_5V", "NET_5V_FILT", "NET_3V3", "NET_3V3_GNSS", "GND"],
+  "esp32_gpios": {
+    "GPIO0": {
+      "function": "BOOT button / strapping",
+      "connected_to": "Q2 (auto-prog DTR)",
+      "pull": "pull-up 10k R_GPIO0 -> 3.3V",
+      "note": "HIGH=boot normal, LOW=download mode. Botao BOOT para GND."
+    },
+    "GPIO2": {
+      "function": "LED Status",
+      "connected_to": "R_LED 330R -> LED1",
+      "pull": "none",
+      "note": "Saida via resistor 330R nao interfere com strapping"
+    },
+    "GPIO4": {
+      "function": "SD_CS",
+      "connected_to": "J_SD pin CS",
+      "pull": "none",
+      "note": "Chip select MicroSD SPI"
+    },
+    "GPIO5": {
+      "function": "CAN_STB",
+      "connected_to": "U_CAN pin STB",
+      "pull": "pull-up 10k R_GPIO5 -> 3.3V",
+      "note": "HIGH=standby TCAN1044V no boot. Pull-up obrigatorio strapping SDIO."
+    },
+    "GPIO12": {
+      "function": "LIVRE / ADC (strapping CRITICO)",
+      "connected_to": "R_GPIO12",
+      "pull": "PULL-DOWN 10k -> GND OBRIGATORIO",
+      "note": "CRITICO: HIGH no boot = flash 1.8V -> corrompimento. SEMPRE pull-down."
+    },
+    "GPIO13": {
+      "function": "SD_MOSI",
+      "connected_to": "J_SD pin MOSI",
+      "pull": "none",
+      "note": "SPI MOSI MicroSD e header expansao J_SPI pin3"
+    },
+    "GPIO14": {
+      "function": "SD_CLK",
+      "connected_to": "J_SD pin CLK",
+      "pull": "none",
+      "note": "SPI SCK MicroSD e header expansao J_SPI pin5"
+    },
+    "GPIO15": {
+      "function": "KLINE_TX",
+      "connected_to": "U_LS1 A-side 3.3V",
+      "pull": "pull-up 10k opcional para HIGH",
+      "note": "TX K-Line via level shifter 74LVC1T45 -> 5V -> L9637D TX"
+    },
+    "GPIO16": {
+      "function": "GNSS_RX (UART2)",
+      "connected_to": "U_GNSS TXD",
+      "pull": "none",
+      "note": "UART2 RX recebe dados NEO-M9N 115200 baud UBX-NAV-PVT 10Hz"
+    },
+    "GPIO17": {
+      "function": "GNSS_TX (UART2)",
+      "connected_to": "U_GNSS RXD",
+      "pull": "none",
+      "note": "UART2 TX envia comandos UBX para NEO-M9N configuracao 10Hz"
+    },
+    "GPIO18": {
+      "function": "CAN_TX",
+      "connected_to": "U_CAN TXD (direto)",
+      "pull": "none",
+      "note": "Direto sem level shifter. TCAN1044V V_IH=2.0V, ESP32 saida 3.3V."
+    },
+    "GPIO19": {
+      "function": "CAN_RX",
+      "connected_to": "R_CAN_G1 (via divisor 10k/20k)",
+      "pull": "none",
+      "note": "Divisor 10k/20k protege ESP32 de 5V saida TCAN1044V RXD"
+    },
+    "GPIO21": {
+      "function": "I2C_SDA",
+      "connected_to": "R_I2C_SDA 4.7k -> 3.3V, J_I2C pin3",
+      "pull": "pull-up 4.7k R_I2C_SDA -> 3.3V",
+      "note": "I2C SDA expansao header J_I2C"
+    },
+    "GPIO22": {
+      "function": "I2C_SCL",
+      "connected_to": "R_I2C_SCL 4.7k -> 3.3V, J_I2C pin4",
+      "pull": "pull-up 4.7k R_I2C_SCL -> 3.3V",
+      "note": "I2C SCL expansao header J_I2C"
+    },
+    "GPIO23": {
+      "function": "SD_MISO",
+      "connected_to": "J_SD pin MISO",
+      "pull": "none",
+      "note": "SPI MISO MicroSD e header expansao J_SPI pin4"
+    },
+    "GPIO25": {
+      "function": "CAN_TERM_CTL",
+      "connected_to": "Q4 BSS138 gate via 10k",
+      "pull": "none",
+      "note": "Controla terminacao CAN 120R. HIGH=terminado, LOW=desconectado."
+    },
+    "GPIO26": {
+      "function": "EXP_GPIO_1",
+      "connected_to": "ESD1 ch1 -> J_GPIO pin3",
+      "pull": "none",
+      "note": "Header expansao com protecao ESD PRTR5V0U2X"
+    },
+    "GPIO27": {
+      "function": "EXP_GPIO_2",
+      "connected_to": "ESD1 ch2 -> J_GPIO pin4",
+      "pull": "none",
+      "note": "Header expansao com protecao ESD. J_SPI CS_EXP pin6."
+    },
+    "GPIO32": {
+      "function": "EXP_GPIO_3",
+      "connected_to": "ESD2 ch1 -> J_GPIO pin5",
+      "pull": "none",
+      "note": "Header expansao com protecao ESD"
+    },
+    "GPIO33": {
+      "function": "KLINE_RX",
+      "connected_to": "U_KLINE RX via divisor 10k/20k",
+      "pull": "none",
+      "note": "Input K-Line RX do L9637D. Divisor protege 5V->3.3V. CORRIGIDO: nao usar no header expansao."
+    },
+    "GPIO34": {
+      "function": "ADC_VBATT (input only)",
+      "connected_to": "Divisor R_VBAT1 100k/22k",
+      "pull": "none",
+      "note": "ADC 12bit monitor V_BATT. Escala: Vadc = Vbatt x 0.18. 16V->2.88V OK."
+    },
+    "GPIO35": {
+      "function": "GNSS_PPS (input only)",
+      "connected_to": "U_GNSS PPS via R 100R",
+      "pull": "none",
+      "note": "PPS 1Hz/10Hz borda precisao +-20ns. Resistor 100R ESD."
+    },
+    "GPIO36_VP": {
+      "function": "ADC_EXP_1 (input only)",
+      "connected_to": "NTC1 / ESD2 ch2 / J_GPIO pin6",
+      "pull": "none",
+      "note": "ADC expansao E NTC termistor temperatura interna caixa"
+    },
+    "GPIO39_VN": {
+      "function": "ADC_EXP_2 (input only)",
+      "connected_to": "J_GPIO header",
+      "pull": "none",
+      "note": "ADC expansao input only"
+    },
+    "UART0_RX": {
+      "function": "USB_UART_RX (programacao/debug)",
+      "connected_to": "U_USB TXD",
+      "pull": "none",
+      "note": "CP2104 TX -> ESP32 RX0 UART0 115200 baud"
+    },
+    "UART0_TX": {
+      "function": "USB_UART_TX (programacao/debug)",
+      "connected_to": "U_USB RXD",
+      "pull": "none",
+      "note": "ESP32 TX0 -> CP2104 RX UART0"
+    },
+    "EN": {
+      "function": "Reset",
+      "connected_to": "Q3 BC817 collector via 100nF",
+      "pull": "none",
+      "note": "Reset via RTS CP2104. Capacitor 100nF cria pulso sem manter LOW continuo."
+    }
+  },
+  "notes": {
+    "critical": [
+      "GPIO12 DEVE ter pull-DOWN 10k para GND - HIGH no boot corrompe flash ESP32",
+      "GPIO5 DEVE ter pull-UP 10k para 3.3V - strapping SDIO e CAN_STB",
+      "LMR14020 2A - nao substituir por LMR14010 1A - pico de carga > 1A",
+      "R_BOT_BK 56.2k - valor critico que define Vout=5V do Buck",
+      "TVS1 SMDJ22A standoff 22V - nao usar TVS 13V que conduziria em carga normal",
+      "Q1 P-MOSFET VDS >= -40V obrigatorio - TVS clampeia em 35.5V"
+    ],
+    "design": [
+      "PCB 4 camadas recomendado: Signal/GND/Power/Signal",
+      "Buck no canto, GNSS no canto oposto da PCB",
+      "Star ground no ponto do C1 bulk 100uF",
+      "Trilha RF 50ohm 2.9mm largura FR4 1.6mm para J_ANT -> NEO-M9N < 10mm",
+      "Thermal vias grade 0.3mm drill sob Buck e LDO para dissipacao termica",
+      "CAN TX direto 3.3V - TCAN1044V V_IH=2.0V sem level shifter",
+      "K-Line TX via 74LVC1T45 level shifter 3.3V->5V",
+      "UART2 GPIO16/17 a 115200 baud para NEO-M9N 10Hz UBX-NAV-PVT",
+      "SPI compartilhado MicroSD + header J_SPI - usar mutex firmware",
+      "Temperatura maxima operacao caixa fechada: monitorar NTC GPIO36 throttle a 70C"
+    ],
+    "bom_notes": [
+      "NEO-M9N C5119087 estoque baixo (200 un) - reservar imediatamente",
+      "L9637D C153038 estoque 1022 - part legado monitorar",
+      "U_USB CP2104 QFN-24 footprint diferente do CP2102N original - atualizar PCB",
+      "C_IN C1525 tecnicamente X5R nao X7R/100V - para X7R/100V usar CC0402KRX7R8BB104",
+      "C1 EEEFK1H101P altura 10mm - verificar limite caixa OBD2"
+    ]
+  }
+}
