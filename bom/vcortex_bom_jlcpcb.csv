@@ -1,7 +1,7 @@
 Reference,Value,MPN,Footprint_KiCad,LCSC_Part,Manufacturer,Description,JLCPCB_Category,Qty,Assembly,Notes
-Q1,PMV45EN2R,PMV45EN2R-JSM,Package_TO_SOT_SMD:SOT-23,C53113978,JSMSEMI,P-MOSFET VDS=-40V ID=-3A protecao inversao polaridade,Extended,1,PCBA,Alt Nexperia C426872 (mais caro). |VDS|=40V obrigatorio (TVS clamp 35.5V). R_GATE 10k ao GND
+Q1,PMV45EN2R,PMV45EN2R-JSM,Package_TO_SOT_SMD:SOT-23,C53113978,JSMSEMI,P-MOSFET VDS=-40V ID=-3A protecao inversao polaridade,Extended,1,PCBA,VERIFICADO v1.3: datasheet JSMSEMI C53113978 VDS(max)=-40V OK. ATENCAO: Nexperia C426872 e -30V (insuficiente). Usar SOMENTE C53113978.
 R_GATE,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Pull-down gate Q1 -> GND,Basic,1,PCBA,
-F1,1812L300MR,1812L300MR,Resistor_SMD:R_1812_4532Metric,C127824,Littelfuse,PTC Polyfuse 3A/30V 1812 resetavel,Extended,1,PCBA,Alt C135366 (JDTfuse ASMD1812-300). Protecao sobrecorrente V_BATT
+F1,MF-MSMF300/60-2,MF-MSMF300/60-2,Resistor_SMD:R_1812_4532Metric,C383507,Bourns,PTC Polyfuse 3A/60V 1812 resetavel,Extended,1,PCBA,CORRIGIDO v1.3: era 1812L300MR 30V (insuficiente — TVS clamps 35.5V). 60V obrigatorio. Alt: Littelfuse 1812L300/60WR
 TVS1,SMDJ22A,SMDJ22A,Diode_SMD:D_SMC,C4154722,Littelfuse,TVS 22V/1500W load dump clamp 35.5V (ISO7637-2),Extended,1,PCBA,Unidirecional: anodo->GND catodo->VBATT_PROT
 L1,10uH/4A,CKCS6028-10uH/M,Inductor_SMD:L_6.0x6.0mm,C354625,CENKER,Indutor shielded 10uH/4A filtro ENTRADA Buck (NAO chaveamento),Extended,1,PCBA,DIFERENTE do L_SW (Buck switch). Faz par PI com C1 para atenuar ISO7637 pulsos 1/2/3. Isat>=4A necessario
 C1,100uF/50V,RX100UF50V90RV0105,Capacitor_SMD:CP_Elec_6.3x7.7mm,C3445238,KNSCHA,Electrolytic 100uF/50V bulk entrada Buck SMD D6.3x7mm,Extended,1,PCBA,Tensao 50V necessaria (TVS clamp 35.5V max)
