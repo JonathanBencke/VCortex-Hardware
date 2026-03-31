@@ -1,3 +1,6 @@
+# OBSOLETO — RASCUNHO INICIAL (v1 draft). NAO USAR PARA PRODUCAO.
+# Arquivo de producao correto: vcortex_bom_jlcpcb.csv
+# Erros conhecidos: R_BOT_BK=56.2k (deve ser 18k), F1 sem LCSC, C_BOUT footprint 1206 (deve ser 0805), Q3 LCSC errado
 Reference,Value,MPN,Footprint,LCSC_Part,Manufacturer,Description,Stage,Qty,Notes
 Q1,SI2359DS,SI2359DS,SOT-23,,Vishay,P-MOSFET VDS=-40V inversão polaridade,1,1,|VDS|>40V obrigatório (TVS clamp 35.5V)
 F1,Polyfuse 3A/30V,MF-MSMF300,1812,,Bourns,PTC fuse sobrecorrente V_BATT,1,1,
