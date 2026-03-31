@@ -62,6 +62,8 @@ R_K,100R,RC0402FR-07100RL,Resistor_SMD:R_0402_1005Metric,C106232,Yageo,Serie K-L
 R_KPU_A,510R,0402WGF5100TCE,Resistor_SMD:R_0402_1005Metric,C25123,UNI-ROYAL,Pull-up K-Line KBAT=VBATT modo veiculo ISO9141,Basic,1,PCBA,Jumper selecionavel posicao A. CORRIGIDO: C27522 era NOT_FOUND
 R_KPU_B,1k,RC0402FR-071KL,Resistor_SMD:R_0402_1005Metric,C21190,Yageo,Pull-up K-Line KBAT=5V modo bancada/debug,Basic,1,PCBA,Jumper selecionavel posicao B
 R_EN_K,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Pull-UP EN L9637D -> +5V (sempre habilitado),Basic,1,PCBA,
+R_KRXA,10k,RC0402FR-0710KL,Resistor_SMD:R_0402_1005Metric,C60490,Yageo,Divisor KLINE_RX top 10k (L9637D RXD 5V -> GPIO33 3.3V),Basic,1,PCBA,NOVO v1.3: L9637D RXD e saida 5V. GPIO33 max=3.3V. V_GPIO33=5V*20k/30k=3.33V
+R_KRXB,20k,RC0402FR-0720KL,Resistor_SMD:R_0402_1005Metric,C93942,Yageo,Divisor KLINE_RX bot 20k -> GND,Basic,1,PCBA,NOVO v1.3: mesmo conceito do CAN_RX (R_CAN_G1/G2). Posicionar proximo ao GPIO33.
 U_GNSS,NEO-M9N-00B,NEO-M9N-00B,RF_GPS:u-blox_NEO-M9N_LGA-24,GLOBAL_SOURCING,u-blox,GNSS 10Hz LGA-24 GPS/GLONASS/Galileo/BeiDou,GlobalSourcing,1,PCBA,NAO na LCSC. JLCPCB Global Sourcing ou consignment. MPN: NEO-M9N-00B
 FB_GNSS,BLM21PG601SN1D,BLM21PG601SN1D,Inductor_SMD:L_0805_2012Metric,C41556732,muRata,Ferrite 600Ohm@100MHz isolamento VCC GNSS. CORRIGIDO: C21179 era NOT_FOUND,Extended,1,PCBA,
 C_GNSS_BULK,10uF X5R,CL21A106KAYNNNE,Capacitor_SMD:C_0805_2012Metric,C96446,Samsung,Bulk VCC GNSS 10uF,Basic,1,PCBA,CRITICO: sem bulk o GNSS tem dropout no cold-start
